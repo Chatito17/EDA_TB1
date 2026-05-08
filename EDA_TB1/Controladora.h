@@ -14,44 +14,46 @@ class Controladora
 private:
     Usuario* usuarioActual;
     Tienda* tienda;
-    Division* division;
+    Division* ligaActual;
     BancoPreguntas* banco;
-    
+
+    // Almacenamos a los bots para poder borrar su memoria al cerrar
+    LinkedList<Usuario*> competidores;
 
 public:
     Controladora() {
-        // Se corrige el constructor pasando el apodo
-        usuarioActual = new Usuario("putito");
+        usuarioActual = new Usuario("Cristian");
         tienda = new Tienda();
-        division = new Division();
+        ligaActual = new Division(Bronce);
         banco = new BancoPreguntas();
 
-        // 1. Poblamos el banco de preguntas al iniciar
-        banco->agregar(new PreguntaEscribir("Traduce 'Manzana' al ingles", "Apple"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Perro' al ingles", "Dog"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Gato' al ingles", "Cat"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Libro' al ingles", "Book"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Agua' al ingles", "Water"));
+        poblarBancoDePreguntas();
+        iniciarSimulacionLiga();
     }
 
     ~Controladora() {
         delete usuarioActual;
         delete tienda;
-        delete division;
+        delete ligaActual;
         delete banco;
+        // Limpiar memoria de bots
+        for (int i = 0; i < competidores.Length(); i++) {
+            delete competidores.GetPos(i);
+        }
     }
 
     void iniciar() {
         int opcionMenu;
         do {
-            std::cout << "\n[ MENU PRINCIPAL ]\n";
+            std::cout << "\n[ MENU PRINCIPAL - CLON DUOLINGO ]\n";
             std::cout << "1. Ver Perfil\n";
             std::cout << "2. Entrar a la Tienda\n";
-            std::cout << "3. Rendir Examen de Nivel\n";
-            std::cout << "4. Salir del programa\n";
+            std::cout << "3. Rendir Examen (Ganar EXP)\n";
+            std::cout << "4. Ver Clasificacion de la Liga\n";
+            std::cout << "5. Salir del programa\n";
             std::cout << "Elige una opcion: ";
             std::cin >> opcionMenu;
-            std::cin.ignore(); // Limpiar el buffer para el getline de los examenes
+            std::cin.ignore();
 
             switch (opcionMenu) {
             case 1:
@@ -64,15 +66,44 @@ public:
                 rendirExamen();
                 break;
             case 4:
+                ligaActual->mostrarTablaDivision();
+                break;
+            case 5:
                 std::cout << "Saliendo del aplicativo...\n";
                 break;
             default:
                 std::cout << "Opcion no valida.\n";
             }
-        } while (opcionMenu != 4);
+        } while (opcionMenu != 5);
     }
 
 private:
+    void poblarBancoDePreguntas() {
+        banco->agregar(new PreguntaEscribir("Traduce 'Manzana' al ingles", "Apple"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Perro' al ingles", "Dog"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Gato' al ingles", "Cat"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Libro' al ingles", "Book"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Agua' al ingles", "Water"));
+    }
+
+    void iniciarSimulacionLiga() {
+        // Agregamos al usuario real a la división
+        ligaActual->agregarParticipante(usuarioActual);
+
+        // Creamos bots con EXP simulada para que haya competencia
+        Usuario* bot1 = new Usuario("Duo_Lover"); bot1->sumarExp(150);
+        Usuario* bot2 = new Usuario("EnglishPro"); bot2->sumarExp(80);
+        Usuario* bot3 = new Usuario("Gamer2025"); bot3->sumarExp(30);
+
+        competidores.AddLast(bot1);
+        competidores.AddLast(bot2);
+        competidores.AddLast(bot3);
+
+        ligaActual->agregarParticipante(bot1);
+        ligaActual->agregarParticipante(bot2);
+        ligaActual->agregarParticipante(bot3);
+    }
+
     void menuTienda() {
         int opcionTienda;
         do {
@@ -82,7 +113,6 @@ private:
 
             if (opcionTienda > 0) {
                 Producto* productoElegido = tienda->getProducto(opcionTienda - 1);
-
                 if (productoElegido != nullptr) {
                     usuarioActual->comprarProducto(productoElegido);
                 }
@@ -92,20 +122,25 @@ private:
             }
         } while (opcionTienda != 0);
     }
+
     void rendirExamen() {
-        // Obtenemos 5 preguntas aleatorias del banco usando tu propia logica lambda
         Pila<Pregunta*> preguntasExamen = banco->seleccionarParaExamen(5, [](Pregunta* p) {
-            return true; // Criterio: acepta todas las preguntas
+            return true;
             });
 
-        // Ejecutamos el polimorfismo de Examen
-        ExamenNivel examen("Leccion de Ingles Basico");
+        ExamenNivel examen("Leccion Rapida");
         ResultadoDetallado res = examen.hacerExamen(preguntasExamen);
 
-        // Integracion: Recompensamos al usuario si aprobo
-        if (res.getPuntaje() >= 3) { // 3 de 5 correcto
-            std::cout << ">>> Has ganado 50 gemas por tu buen rendimiento! <<<\n";
-            // Para que esto funcione, necesitas agregar un metodo sumarGemas(int) en Usuario.h
+        // Lógica fundamental de Duolingo: A más respuestas correctas, más experiencia
+        if (res.getPuntaje() > 0) {
+            int expGanada = res.getPuntaje() * 15; // 15 de EXP por acierto
+            usuarioActual->sumarExp(expGanada);
+            std::cout << ">>> Has ganado " << expGanada << " de EXP! Revise la liga para ver si subio de puesto <<<\n";
+        }
+
+        if (res.getPuntaje() >= 3) {
+            std::cout << ">>> Has ganado 50 gemas extra de recompensa! <<<\n";
+            usuarioActual->sumarGemas(50);
         }
     }
 };

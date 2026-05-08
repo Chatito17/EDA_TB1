@@ -1,6 +1,4 @@
 #pragma once
-#ifndef EXAMEN_H
-#define EXAMEN_H
 
 #include "Pregunta.h"
 #include "Pila.h"
@@ -194,5 +192,3 @@ public:
         return res;
     }
 };
-
-#endif // EXAMEN_H

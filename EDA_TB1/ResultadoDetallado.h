@@ -235,5 +235,3 @@ inline void ordenarResultados(
     if (n <= 1) return;
     mergeSortPunteros(arr, 0, n - 1, cmp);
 }
-
-#endif // RESULTADO_DETALLADO_H

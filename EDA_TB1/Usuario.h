@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <string>
 #include "Producto.h"
 
 class Usuario
@@ -29,11 +30,20 @@ public:
     }
     ~Usuario() {}
 
+    std::string getNombre() { return apodo; }
+    int getExp() { return exp; }
+
     void sumarVidas(int cantidad) { vidas += cantidad; }
+    void sumarGemas(int cantidad) { gemas += cantidad; }
     void setProtectorRacha(bool estado) { proteRacha = estado; }
     void setUsuarioPlus(bool estado) { usuarioPlus = estado; }
+    void activarDuplicador() { dobleExp = true; std::cout << " [Buff] EXP x2 Activada!\n"; }
 
-    void activarDuplicador() { std::cout << " [Buff] EXP x2 Activada!\n"; }
+  
+    void sumarExp(int cantidad) {
+        if (dobleExp) cantidad *= 2;
+        exp += cantidad;
+    }
 
     bool gastarGemas(int cantidad) {
         if (gemas >= cantidad) {
@@ -62,10 +72,6 @@ public:
         std::cout << "EXP: " << exp << "\n";
         std::cout << "Protector de Racha: " << (proteRacha ? "Activado" : "Desactivado") << "\n";
         std::cout << "Usuario Plus: " << (usuarioPlus ? "Si" : "No") << "\n";
-        std::cout << "Doble EXP: " << (dobleExp ? "Si" : "No") << "\n";
         std::cout << "=========================\n";
-    }
-    std::string getNombre() {
-        return apodo;
     }
 };

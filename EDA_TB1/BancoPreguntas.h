@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef BANCO_PREGUNTAS_H
-#define BANCO_PREGUNTAS_H
-
 #include "Pregunta.h"
 #include "Pila.h"
 #include <string>
@@ -106,5 +103,3 @@ public:
         }
     }
 };
-
-#endif // BANCO_PREGUNTAS_H
