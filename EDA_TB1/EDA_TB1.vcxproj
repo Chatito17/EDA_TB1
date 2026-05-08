@@ -125,6 +125,17 @@
   <ItemGroup>
     <ClCompile Include="EDA_TB1.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Controladora.h" />
+    <ClInclude Include="DuplicadorExp.h" />
+    <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="Producto.h" />
+    <ClInclude Include="ProtectorRacha.h" />
+    <ClInclude Include="Tienda.h" />
+    <ClInclude Include="Usuario.h" />
+    <ClInclude Include="ActivarPlus.h" />
+    <ClInclude Include="VidasExtra.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

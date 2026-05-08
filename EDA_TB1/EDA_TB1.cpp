@@ -1,10 +1,11 @@
-// EDA_TB1.cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
-//
+#include "Controladora.h"
 
-#include <iostream>
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
-}
+    Controladora app;
+    app.iniciar();
 
+    return 0;
+}
