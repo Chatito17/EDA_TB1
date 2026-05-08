@@ -63,6 +63,10 @@ public:
         }
         return false;
     }
+    int getVidas() { return vidas; }
+    void restarVida() {
+        if (vidas > 0) vidas--;
+    }
 
     void comprarProducto(Producto* p) {
         if (p && gastarGemas(p->getCosto())) {
@@ -101,14 +105,24 @@ public:
         if (!cursoActual) return;
 
         indiceNivelActual++;
-        // Lógica sencilla: si superamos los niveles de la sección, pasamos a la siguiente
-        Seccion* secActual = cursoActual->getEtapa(indiceEtapaActual)->getSeccion(indiceSeccionActual);
+
+        // CORRECCIÓN: Faltaba definir etapaActualObj para prevenir el Null Pointer / Crasheo
+        Etapa* etapaActualObj = cursoActual->getEtapa(indiceEtapaActual);
+        Seccion* secActual = etapaActualObj->getSeccion(indiceSeccionActual);
+
+        // Si superamos todos los niveles de esta sección...
         if (indiceNivelActual >= secActual->getCantidadNiveles()) {
             indiceNivelActual = 0;
             indiceSeccionActual++;
+
+            // Si superamos todas las secciones de la etapa...
             if (indiceSeccionActual >= etapaActualObj->getCantidadSecciones()) {
                 indiceSeccionActual = 0;
-                indiceEtapaActual++; // Pasó a otra etapa
+                indiceEtapaActual++; // Pasamos a la siguiente gran etapa del curso
+                std::cout << "\n>>> ¡Has avanzado a una nueva ETAPA! <<<\n";
+            }
+            else {
+                std::cout << "\n>>> ¡Has desbloqueado una nueva SECCIÓN! <<<\n";
             }
         }
     }

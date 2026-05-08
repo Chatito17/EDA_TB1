@@ -156,46 +156,13 @@ private:
 
     // --- NUEVO METODO PARA ELEGIR TIPO DE EXAMEN ---
     void menuExamen() {
-        int tipoExamen;
-        std::cout << "\n=== SELECCION DE EXAMEN ===\n";
-        std::cout << "1. Examen de Nivel (5 preguntas)\n";
-        std::cout << "2. Examen de Etapa (7 preguntas)\n";
-        std::cout << "3. Examen de Certificado (10 preguntas)\n";
-        std::cout << "Elige el tipo de examen: ";
-        std::cin >> tipoExamen;
-        std::cin.ignore(); // Limpiar el buffer para la lectura de las respuestas
-
-        Examen* examen = nullptr;
-        int numPreguntas = 0;
-        int multiplicadorExp = 15;
-        int recomGemas = 50;
-
-        // Polimorfismo: instanciamos el examen según la elección
-        switch (tipoExamen) {
-        case 1:
-            examen = new ExamenNivel("Leccion Rapida");
-            numPreguntas = 5;
-            multiplicadorExp = 15;
-            recomGemas = 50;
-            break;
-        case 2:
-            examen = new ExamenEtapa(1);
-            numPreguntas = 7;
-            multiplicadorExp = 20;
-            recomGemas = 70;
-            break;
-        case 3:
-            examen = new ExamenCertificado();
-            numPreguntas = 10;
-            multiplicadorExp = 25;
-            recomGemas = 100;
-            break;
-        default:
-            std::cout << "Opcion invalida, seleccionando Examen de Nivel por defecto.\n";
-            examen = new ExamenNivel("Leccion Rapida");
-            numPreguntas = 5;
-            break;
+        // Validación 1: Verificar Vidas
+        if (usuarioActual->getVidas() <= 0) {
+            std::cout << "\n[!] No te quedan corazones. Ve a la tienda a comprar vidas extra para continuar aprendiendo.\n";
+            return;
         }
+
+        // Validación 2: Verificar inscripción al curso
         Curso* c = usuarioActual->getCursoActual();
         if (c == nullptr) {
             std::cout << "\n[!] Debes inscribirte a un curso primero (Opcion 2 del menu).\n";
@@ -205,33 +172,71 @@ private:
             std::cout << "\n[!] ¡Felicidades! Ya has completado todo el curso de " << c->getIdioma() << ".\n";
             return;
         }
+
+        int tipoExamen;
+        std::cout << "\n=== SELECCION DE EXAMEN ===\n";
+        std::cout << "1. Examen de Nivel (Leccion Normal)\n";
+        std::cout << "2. Examen de Etapa (Salto rapido)\n";
+        std::cout << "3. Examen de Certificado (Final)\n";
+        std::cout << "Elige el tipo de examen: ";
+        std::cin >> tipoExamen;
+        std::cin.ignore();
+
+        Examen* examen = nullptr;
+
+        // Instanciación Polimórfica (Ya no hardcodeamos las variables aquí)
+        switch (tipoExamen) {
+        case 1:
+            examen = new ExamenNivel("Leccion");
+            break;
+        case 2:
+            examen = new ExamenEtapa(usuarioActual->getEtapaActual() + 1);
+            break;
+        case 3:
+            examen = new ExamenCertificado();
+            break;
+        default:
+            std::cout << "Opcion invalida, seleccionando Examen de Nivel por defecto.\n";
+            examen = new ExamenNivel("Leccion");
+            tipoExamen = 1;
+            break;
+        }
+
         Etapa* eActual = c->getEtapa(usuarioActual->getEtapaActual());
         Seccion* sActual = eActual->getSeccion(usuarioActual->getSeccionActual());
         Nivel* nActual = sActual->getNivel(usuarioActual->getNivelActual());
-
         BancoPreguntas* bancoLocal = nActual->getBancoPreguntas();
 
-        Pila<Pregunta*> preguntasExamen = bancoLocal->seleccionarParaExamen(numPreguntas, [](Pregunta* p) {
+        // Extraer las preguntas del banco local según la cantidad dictada por el examen
+        Pila<Pregunta*> preguntasExamen = bancoLocal->seleccionarParaExamen(examen->getCantPreguntas(), [](Pregunta* p) {
             return true;
             });
-        // Ejecuta el examen con la lógica propia del hijo
-        ResultadoDetallado res = examen->hacerExamen(preguntasExamen);
 
-        // Subir EXP en base a la dificultad del examen
-        if (res.getPuntaje() > 0) {
-            int expGanada = res.getPuntaje() * multiplicadorExp;
+        // Ejecutar enviando al usuario
+        ResultadoDetallado res = examen->hacerExamen(preguntasExamen, usuarioActual);
+
+        // Lógica de Recompensas y Avance
+        int expGanada = res.getPuntaje() * examen->getMultiplicadorExp();
+        if (expGanada > 0) {
             usuarioActual->sumarExp(expGanada);
-            std::cout << ">>> No has pasado al siguiente nivel! <<<\n";
-            std::cout << ">>> Has ganado " << expGanada << " de EXP! Revisa la clasificacion <<<\n";
+            std::cout << ">>> Has ganado " << expGanada << " de EXP! Revisa el Ranking de Ligas <<<\n";
         }
 
-        if (res.getPuntaje() >= (numPreguntas / 2 + 1)) {
-            std::cout << ">>> Has pasado al siguiente nivel! <<<\n";
+        // Se aprueba con más del 50%
+        int mitad = (examen->getCantPreguntas() / 2) + 1;
+
+        if (res.getPuntaje() >= mitad && usuarioActual->getVidas() > 0) {
+            std::cout << "\n>>> ¡PRUEBA SUPERADA! <<<\n";
             if (tipoExamen == 1) {
                 usuarioActual->avanzarNivel();
             }
-            std::cout << ">>> Has ganado " << recomGemas << " gemas extra por tu buen rendimiento! <<<\n";
-            usuarioActual->sumarGemas(recomGemas);
+            // Aquí puedes agregar la lógica si pasa el de Etapa para llamar a usuarioActual->avanzarEtapa()
+
+            std::cout << ">>> Has ganado " << examen->getRecomGemas() << " gemas de recompensa! <<<\n";
+            usuarioActual->sumarGemas(examen->getRecomGemas());
+        }
+        else if (usuarioActual->getVidas() > 0) {
+            std::cout << "\n>>> No lograste el puntaje minimo. ¡Sigue intentando! <<<\n";
         }
 
         delete examen;
