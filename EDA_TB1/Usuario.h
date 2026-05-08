@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "Producto.h"
+#include "Curso.h"
 
 class Usuario
 {
@@ -16,6 +17,11 @@ private:
     bool usuarioPlus;
     bool dobleExp;
 
+    Curso* cursoActual;
+    int indiceEtapaActual;
+    int indiceSeccionActual;
+    int indiceNivelActual;
+
 public:
     Usuario(std::string _apodo) {
         apodo = _apodo;
@@ -27,6 +33,11 @@ public:
         proteRacha = false;
         usuarioPlus = false;
         dobleExp = false;
+
+        cursoActual = nullptr;
+        indiceEtapaActual = 0;
+        indiceSeccionActual = 0;
+        indiceNivelActual = 0;
     }
     ~Usuario() {}
 
@@ -73,5 +84,45 @@ public:
         std::cout << "Protector de Racha: " << (proteRacha ? "Activado" : "Desactivado") << "\n";
         std::cout << "Usuario Plus: " << (usuarioPlus ? "Si" : "No") << "\n";
         std::cout << "=========================\n";
+    }
+    void inscribirseCurso(Curso* curso) {
+        cursoActual = curso;
+        indiceEtapaActual = 0;
+        indiceSeccionActual = 0;
+        indiceNivelActual = 0;
+        std::cout << "\n>>> Te has inscrito exitosamente al curso de " << curso->getIdioma() << " <<<\n";
+    }
+    Curso* getCursoActual() { return cursoActual; }
+    int getEtapaActual() { return indiceEtapaActual; }
+    int getSeccionActual() { return indiceSeccionActual; }
+    int getNivelActual() { return indiceNivelActual; }
+
+    void avanzarNivel() {
+        if (!cursoActual) return;
+
+        indiceNivelActual++;
+        // Lógica sencilla: si superamos los niveles de la sección, pasamos a la siguiente
+        Seccion* secActual = cursoActual->getEtapa(indiceEtapaActual)->getSeccion(indiceSeccionActual);
+        if (indiceNivelActual >= secActual->getCantidadNiveles()) {
+            indiceNivelActual = 0;
+            indiceSeccionActual++;
+            if (indiceSeccionActual >= etapaActualObj->getCantidadSecciones()) {
+                indiceSeccionActual = 0;
+                indiceEtapaActual++; // Pasó a otra etapa
+            }
+        }
+    }
+
+    void verProgreso() {
+        if (!cursoActual) {
+            std::cout << "No estas inscrito en ningun curso.\n";
+            return;
+        }
+        std::cout << "\n--- PROGRESO ACTUAL ---\n";
+        std::cout << "Curso: " << cursoActual->getIdioma() << "\n";
+        std::cout << "Etapa: " << indiceEtapaActual + 1 << "\n";
+        std::cout << "Seccion: " << indiceSeccionActual + 1 << "\n";
+        std::cout << "Nivel: " << indiceNivelActual + 1 << "\n";
+        std::cout << "-----------------------\n";
     }
 };

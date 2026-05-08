@@ -8,6 +8,7 @@
 #include "Division.h"
 #include "BancoPreguntas.h"
 #include "Examen.h"
+#include "Curso.h"
 
 class Controladora
 {
@@ -15,18 +16,17 @@ private:
     Usuario* usuarioActual;
     Tienda* tienda;
     Division* ligaActual;
-    BancoPreguntas* banco;
 
     LinkedList<Usuario*> competidores;
+    LinkedList<Curso*> catalogoCursos;
 
 public:
     Controladora() {
         usuarioActual = new Usuario("Cristian");
         tienda = new Tienda();
         ligaActual = new Division(Bronce);
-        banco = new BancoPreguntas();
 
-        poblarBancoDePreguntas();
+        inicializarCursos();
         iniciarSimulacionLiga();
     }
 
@@ -34,9 +34,12 @@ public:
         delete usuarioActual;
         delete tienda;
         delete ligaActual;
-        delete banco;
         for (int i = 0; i < competidores.Length(); i++) {
             delete competidores.GetPos(i);
+        }
+        
+        for (int i = 0; i < catalogoCursos.Length(); i++) {
+            delete catalogoCursos.GetPos(i);
         }
     }
 
@@ -44,70 +47,78 @@ public:
         int opcionMenu;
         do {
             std::cout << "\n[ MENU PRINCIPAL - CLON DUOLINGO ]\n";
-            std::cout << "1. Ver Perfil\n";
-            std::cout << "2. Entrar a la Tienda\n";
-            std::cout << "3. Rendir Examen\n";
-            std::cout << "4. Ver Clasificacion de la Liga\n";
-            std::cout << "5. Salir del programa\n";
+            std::cout << "1. Ver Perfil y Progreso actual\n";
+            std::cout << "2. Explorar e Inscribirse a Cursos\n"; 
+            std::cout << "3. Entrar a la Tienda\n";
+            std::cout << "4. Rendir Examen\n";
+            std::cout << "5. Ver Clasificacion de la Liga\n";
+            std::cout << "6. Salir del programa\n";
             std::cout << "Elige una opcion: ";
             std::cin >> opcionMenu;
             std::cin.ignore();
 
-            switch (opcionMenu) {
+            switch(opcionMenu) {
             case 1:
                 usuarioActual->verPerfil();
+                usuarioActual->verProgreso(); // Muestra nivel, etapa, etc.
                 break;
             case 2:
-                menuTienda();
+                menuCursos(); // Llama al nuevo menú
                 break;
             case 3:
-                menuExamen();
+                menuTienda();
                 break;
             case 4:
-                ligaActual->mostrarTablaDivision();
+                menuExamen();
                 break;
             case 5:
+                ligaActual->mostrarTablaDivision();
+                break;
+            case 6:
                 std::cout << "Saliendo del aplicativo...\n";
                 break;
             default:
                 std::cout << "Opcion no valida.\n";
             }
-        } while (opcionMenu != 5);
+        } while (opcionMenu != 6);
     }
 
 private:
-    void poblarBancoDePreguntas() {
-        // --- PREGUNTAS DE ESCRIBIR ---
-        banco->agregar(new PreguntaEscribir("Traduce 'Manzana' al ingles", "apple"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Perro' al ingles", "dog"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Gato' al ingles", "cat"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Libro' al ingles", "book"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Agua' al ingles", "water"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Rojo' al ingles", "red"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Azul' al ingles", "blue"));
-        banco->agregar(new PreguntaEscribir("Traduce 'Verde' al ingles", "green"));
+    void inicializarCursos() {
+        Curso* cursoIngles = new Curso("Ingles");
 
-        // --- PREGUNTAS DE RELACIONAR ---
-        // Concepto 1 -> Opcion 3 | Concepto 2 -> Opcion 1 | Concepto 3 -> Opcion 2 (Respuesta: 312)
-        std::string conceptos1[] = { "Hello", "Goodbye", "Please" };
-        std::string definiciones1[] = { "1. Adios", "2. Por favor", "3. Hola" };
-        banco->agregar(new PreguntaRelacionar(
-            "Escribe la secuencia de numeros de definicion correctos (Ej. 312)",
-            "312", conceptos1, definiciones1, 3));
+        Etapa* etapa1 = new Etapa("Principiante");
+        Seccion* sec1 = new Seccion("Saludos e Introduccion");
 
-        // Concepto 1 -> Opcion 2 | Concepto 2 -> Opcion 3 | Concepto 3 -> Opcion 1 (Respuesta: 231)
-        std::string conceptos2[] = { "One", "Two", "Three" };
-        std::string definiciones2[] = { "1. Tres", "2. Uno", "3. Dos" };
-        banco->agregar(new PreguntaRelacionar(
-            "Escribe la secuencia de numeros de definicion correctos (Ej. 231)",
-            "231", conceptos2, definiciones2, 3));
+        Nivel* nivel1 = new Nivel("Leccion 1: Lo basico");
+        // Agregamos preguntas al Nivel 1 en vez de al banco global
+        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Manzana' al ingles", "apple"));
+        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Perro' al ingles", "dog"));
+        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Gato' al ingles", "cat"));
+        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Agua' al ingles", "water"));
+        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Libro' al ingles", "book"));
 
-        std::string conceptos3[] = { "Car", "House", "Tree" };
-        std::string definiciones3[] = { "1. Casa", "2. Arbol", "3. Coche" };
-        banco->agregar(new PreguntaRelacionar(
-            "Escribe la secuencia de numeros de definicion correctos (Ej. 312)",
-            "312", conceptos3, definiciones3, 3));
+        Nivel* nivel2 = new Nivel("Leccion 2: Colores y Relaciones");
+        nivel2->agregarPregunta(new PreguntaEscribir("Traduce 'Rojo' al ingles", "red"));
+        nivel2->agregarPregunta(new PreguntaEscribir("Traduce 'Azul' al ingles", "blue"));
+
+        std::string con1[] = { "Hello", "Goodbye", "Please" };
+        std::string def1[] = { "1. Adios", "2. Por favor", "3. Hola" };
+        nivel2->agregarPregunta(new PreguntaRelacionar(
+            "Escribe la secuencia (Ej. 312)", "312", con1, def1, 3));
+
+        // Ensamblamos la estructura
+        sec1->agregarNivel(nivel1);
+        sec1->agregarNivel(nivel2);
+        etapa1->agregarSeccion(sec1);
+        cursoIngles->agregarEtapa(etapa1);
+
+        catalogoCursos.AddLast(cursoIngles);
+
+        // Inscribimos al usuario por defecto al primer curso
+        usuarioActual->inscribirseCurso(cursoIngles);
     }
+    
 
     void iniciarSimulacionLiga() {
         ligaActual->agregarParticipante(usuarioActual);
@@ -185,12 +196,24 @@ private:
             numPreguntas = 5;
             break;
         }
+        Curso* c = usuarioActual->getCursoActual();
+        if (c == nullptr) {
+            std::cout << "\n[!] Debes inscribirte a un curso primero (Opcion 2 del menu).\n";
+            return;
+        }
+        if (usuarioActual->getEtapaActual() >= c->getCantidadEtapas()) {
+            std::cout << "\n[!] ¡Felicidades! Ya has completado todo el curso de " << c->getIdioma() << ".\n";
+            return;
+        }
+        Etapa* eActual = c->getEtapa(usuarioActual->getEtapaActual());
+        Seccion* sActual = eActual->getSeccion(usuarioActual->getSeccionActual());
+        Nivel* nActual = sActual->getNivel(usuarioActual->getNivelActual());
 
-        // Se extraen exactamente la cantidad de preguntas requeridas para el examen
-        Pila<Pregunta*> preguntasExamen = banco->seleccionarParaExamen(numPreguntas, [](Pregunta* p) {
-            return true; // Acepta todas
+        BancoPreguntas* bancoLocal = nActual->getBancoPreguntas();
+
+        Pila<Pregunta*> preguntasExamen = bancoLocal->seleccionarParaExamen(numPreguntas, [](Pregunta* p) {
+            return true;
             });
-
         // Ejecuta el examen con la lógica propia del hijo
         ResultadoDetallado res = examen->hacerExamen(preguntasExamen);
 
@@ -198,15 +221,42 @@ private:
         if (res.getPuntaje() > 0) {
             int expGanada = res.getPuntaje() * multiplicadorExp;
             usuarioActual->sumarExp(expGanada);
+            std::cout << ">>> No has pasado al siguiente nivel! <<<\n";
             std::cout << ">>> Has ganado " << expGanada << " de EXP! Revisa la clasificacion <<<\n";
         }
 
-        // Si acierta más de la mitad, se lleva gemas de recompensa proporcionales
         if (res.getPuntaje() >= (numPreguntas / 2 + 1)) {
+            std::cout << ">>> Has pasado al siguiente nivel! <<<\n";
+            if (tipoExamen == 1) {
+                usuarioActual->avanzarNivel();
+            }
             std::cout << ">>> Has ganado " << recomGemas << " gemas extra por tu buen rendimiento! <<<\n";
             usuarioActual->sumarGemas(recomGemas);
         }
 
-        delete examen; // Liberamos la memoria del polimorfismo
+        delete examen;
+    }
+    void menuCursos() {
+        std::cout << "\n=== CATALOGO DE CURSOS ===\n";
+        if (catalogoCursos.IsEmpty()) {
+            std::cout << "No hay cursos disponibles por el momento.\n";
+            return;
+        }
+
+        for (int i = 0; i < catalogoCursos.Length(); i++) {
+            std::cout << i + 1 << ". Curso de " << catalogoCursos.GetPos(i)->getIdioma() << "\n";
+        }
+        std::cout << "0. Volver\n";
+        std::cout << "==========================\n";
+        std::cout << "Elige un curso para inscribirte: ";
+
+        int opcion;
+        std::cin >> opcion;
+        std::cin.ignore();
+
+        if (opcion > 0 && opcion <= catalogoCursos.Length()) {
+            Curso* cursoElegido = catalogoCursos.GetPos(opcion - 1);
+            usuarioActual->inscribirseCurso(cursoElegido);
+        }
     }
 };
