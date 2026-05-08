@@ -3,22 +3,18 @@
 #include "Pregunta.h"
 #include "Pila.h"
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <functional>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 
-// ============================================================
-// BancoPreguntas
-// Repositorio central de Pregunta* usando un arreglo dinámico
-// propio (sin std::vector). Es el dueño de cada puntero.
-// ============================================================
-
 class BancoPreguntas {
 private:
     Pregunta** preguntas;   // arreglo dinámico de punteros
-    int        cantidad;    // preguntas cargadas
-    int        capacidad;   // tamaño actual del arreglo
+    int cantidad;    // preguntas cargadas
+    int capacidad;   // tamaño actual del arreglo
 
     // Duplica capacidad cuando el arreglo se llena - O(n)
     void expandir() {
@@ -101,5 +97,26 @@ public:
             std::cout << (i + 1) << ". ";
             preguntas[i]->mostrar();
         }
+    }
+    void cargarDesdeArchivo(const std::string& rutaArchivo) {
+        std::ifstream archivo(rutaArchivo);
+        if (!archivo.is_open()) {
+            std::cout << "[!] Error: No se encontro el archivo de preguntas (" << rutaArchivo << ").\n";
+            return;
+        }
+
+        std::string linea;
+        while (std::getline(archivo, linea)) {
+            // Formato esperado en el txt: Enunciado|RespuestaCorrecta
+            size_t posDivisor = linea.find('|');
+            if (posDivisor != std::string::npos) {
+                std::string enunciado = linea.substr(0, posDivisor);
+                std::string respuesta = linea.substr(posDivisor + 1);
+
+                // Agregamos dinámicamente al banco
+                agregar(new PreguntaEscribir(enunciado, respuesta));
+            }
+        }
+        archivo.close();
     }
 };

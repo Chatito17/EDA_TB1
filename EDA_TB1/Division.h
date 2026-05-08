@@ -9,13 +9,15 @@ class Division
 {
 private:
     Divisiones nombreDivision;
-    Ranking ranking;
+    Ranking* ranking;
 
 public:
     Division(Divisiones divInicial = Bronce) {
         nombreDivision = divInicial;
     }
-    ~Division() {};
+    ~Division() {
+        if (ranking != nullptr) delete ranking;
+    };
 
     std::string getNombreStr() {
         const std::string nombres[] = { "Bronce", "Plata", "Oro", "Zafiro", "Rubi", "Esmeralda", "Amatista", "Perla", "Obsidiana", "Diamante" };
@@ -23,12 +25,13 @@ public:
     }
 
     void agregarParticipante(Usuario* usuario) {
-        ranking.agregarUsuario(usuario);
+        ranking->agregarUsuario(usuario);
     }
 
     void mostrarTablaDivision() {
         std::cout << "\n=== LIGA " << getNombreStr() << " ===\n";
-        ranking.mostrarRanking();
+        ranking->mostrarRanking();
         std::cout << "========================\n";
     }
+    Ranking* getRanking() { return ranking; }
 };

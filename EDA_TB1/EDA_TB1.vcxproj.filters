@@ -80,5 +80,22 @@
     <ClInclude Include="Curso.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="Cola.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="preguntas_Ingles.txt">
+      <Filter>Archivos de recursos</Filter>
+    </Text>
+    <Text Include="PreguntasTipo2.txt">
+      <Filter>Archivos de recursos</Filter>
+    </Text>
+    <Text Include="UsuariosBots.txt">
+      <Filter>Archivos de recursos</Filter>
+    </Text>
+    <Text Include="Usuario.txt">
+      <Filter>Archivos de recursos</Filter>
+    </Text>
   </ItemGroup>
 </Project>

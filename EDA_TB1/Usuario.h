@@ -1,8 +1,12 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <fstream>
+
 #include "Producto.h"
 #include "Curso.h"
+#include "Cola.h"
+
 
 class Usuario
 {
@@ -21,6 +25,8 @@ private:
     int indiceEtapaActual;
     int indiceSeccionActual;
     int indiceNivelActual;
+
+    Cola<std::string> notificaciones;
 
 public:
     Usuario(std::string _apodo) {
@@ -50,7 +56,29 @@ public:
     void setUsuarioPlus(bool estado) { usuarioPlus = estado; }
     void activarDuplicador() { dobleExp = true; std::cout << " [Buff] EXP x2 Activada!\n"; }
 
-  
+    void guardarProgreso() {
+        std::ofstream archivo("Usuario_" + apodo + ".txt");
+        if (archivo.is_open()) {
+            // Guardamos los datos separados por saltos de línea
+            archivo << apodo << "\n" << vidas << "\n" << racha << "\n"
+                << gemas << "\n" << exp << "\n"
+                << indiceEtapaActual << "\n" << indiceSeccionActual << "\n" << indiceNivelActual << "\n";
+            archivo.close();
+        }
+    }
+    bool cargarProgreso() {
+        std::ifstream archivo("Usuario_" + apodo + ".txt");
+        if (archivo.is_open()) {
+            std::getline(archivo, apodo);
+            archivo >> vidas >> racha >> gemas >> exp >> indiceEtapaActual >> indiceSeccionActual >> indiceNivelActual;
+            archivo.close();
+            std::cout << "[INFO] Partida cargada exitosamente. Bienvenido de nuevo, " << apodo << "!\n";
+            return true;
+        }
+        // Si no existe el archivo, es un usuario nuevo
+        std::cout << "[INFO] No se encontro partida previa. Creando nuevo perfil...\n";
+        return false;
+    }
     void sumarExp(int cantidad) {
         if (dobleExp) cantidad *= 2;
         exp += cantidad;
@@ -88,6 +116,7 @@ public:
         std::cout << "Protector de Racha: " << (proteRacha ? "Activado" : "Desactivado") << "\n";
         std::cout << "Usuario Plus: " << (usuarioPlus ? "Si" : "No") << "\n";
         std::cout << "=========================\n";
+        leerNotificaciones();
     }
     void inscribirseCurso(Curso* curso) {
         cursoActual = curso;
@@ -138,5 +167,30 @@ public:
         std::cout << "Seccion: " << indiceSeccionActual + 1 << "\n";
         std::cout << "Nivel: " << indiceNivelActual + 1 << "\n";
         std::cout << "-----------------------\n";
+    }
+
+    void agregarNotificacion(std::string msj) {
+        notificaciones.encolar(msj);
+    }
+
+    void leerNotificaciones() {
+        if (notificaciones.estaVacia()) {
+            std::cout << "No tienes notificaciones nuevas.\n";
+            return;
+        }
+        std::cout << "\n--- BANDEJA DE ENTRADA ---\n";
+
+        // Uso de Lambda para cumplir rúbrica
+        auto imprimirMsj = [](std::string msj) {
+            std::cout << "[Mensaje] " << msj << "\n";
+            };
+
+        notificaciones.procesarTodos(imprimirMsj);
+
+        // Vaciamos la cola tras leer
+        while (!notificaciones.estaVacia()) {
+            notificaciones.desencolar();
+        }
+        std::cout << "--------------------------\n";
     }
 };

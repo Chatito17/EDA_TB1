@@ -22,7 +22,11 @@ private:
 
 public:
     Controladora() {
-        usuarioActual = new Usuario("Cristian");
+        usuarioActual = new Usuario("Cristian"); // Tu nombre de usuario
+
+        // 1. INTENTAR CARGAR PROGRESO
+        usuarioActual->cargarProgreso();
+
         tienda = new Tienda();
         ligaActual = new Division(Bronce);
 
@@ -31,13 +35,18 @@ public:
     }
 
     ~Controladora() {
+        // 2. GUARDAR PROGRESO AL SALIR
+        usuarioActual->guardarProgreso();
+
+        // 3. GUARDAR EL RANKING DE LA LIGA AL SALIR
+        ligaActual->getRanking()->guardarTabla(ligaActual->getNombreStr());
+
         delete usuarioActual;
         delete tienda;
         delete ligaActual;
         for (int i = 0; i < competidores.Length(); i++) {
             delete competidores.GetPos(i);
         }
-        
         for (int i = 0; i < catalogoCursos.Length(); i++) {
             delete catalogoCursos.GetPos(i);
         }
@@ -84,40 +93,6 @@ public:
     }
 
 private:
-    void inicializarCursos() {
-        Curso* cursoIngles = new Curso("Ingles");
-
-        Etapa* etapa1 = new Etapa("Principiante");
-        Seccion* sec1 = new Seccion("Saludos e Introduccion");
-
-        Nivel* nivel1 = new Nivel("Leccion 1: Lo basico");
-        // Agregamos preguntas al Nivel 1 en vez de al banco global
-        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Manzana' al ingles", "apple"));
-        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Perro' al ingles", "dog"));
-        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Gato' al ingles", "cat"));
-        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Agua' al ingles", "water"));
-        nivel1->agregarPregunta(new PreguntaEscribir("Traduce 'Libro' al ingles", "book"));
-
-        Nivel* nivel2 = new Nivel("Leccion 2: Colores y Relaciones");
-        nivel2->agregarPregunta(new PreguntaEscribir("Traduce 'Rojo' al ingles", "red"));
-        nivel2->agregarPregunta(new PreguntaEscribir("Traduce 'Azul' al ingles", "blue"));
-
-        std::string con1[] = { "Hello", "Goodbye", "Please" };
-        std::string def1[] = { "1. Adios", "2. Por favor", "3. Hola" };
-        nivel2->agregarPregunta(new PreguntaRelacionar(
-            "Escribe la secuencia (Ej. 312)", "312", con1, def1, 3));
-
-        // Ensamblamos la estructura
-        sec1->agregarNivel(nivel1);
-        sec1->agregarNivel(nivel2);
-        etapa1->agregarSeccion(sec1);
-        cursoIngles->agregarEtapa(etapa1);
-
-        catalogoCursos.AddLast(cursoIngles);
-
-        // Inscribimos al usuario por defecto al primer curso
-        usuarioActual->inscribirseCurso(cursoIngles);
-    }
     
 
     void iniciarSimulacionLiga() {
@@ -146,12 +121,14 @@ private:
                 Producto* productoElegido = tienda->getProducto(opcionTienda - 1);
                 if (productoElegido != nullptr) {
                     usuarioActual->comprarProducto(productoElegido);
+                    usuarioActual->agregarNotificacion("Has comprado: " + productoElegido->getNombre());
                 }
                 else {
                     std::cout << "Producto inexistente.\n";
                 }
             }
         } while (opcionTienda != 0);
+
     }
 
     // --- NUEVO METODO PARA ELEGIR TIPO DE EXAMEN ---
@@ -231,8 +208,7 @@ private:
                 usuarioActual->avanzarNivel();
             }
             // Aquí puedes agregar la lógica si pasa el de Etapa para llamar a usuarioActual->avanzarEtapa()
-
-            std::cout << ">>> Has ganado " << examen->getRecomGemas() << " gemas de recompensa! <<<\n";
+            usuarioActual->agregarNotificacion("¡Felicidades! Ganaste " + std::to_string(examen->getRecomGemas()) + " gemas.");
             usuarioActual->sumarGemas(examen->getRecomGemas());
         }
         else if (usuarioActual->getVidas() > 0) {
@@ -262,6 +238,24 @@ private:
         if (opcion > 0 && opcion <= catalogoCursos.Length()) {
             Curso* cursoElegido = catalogoCursos.GetPos(opcion - 1);
             usuarioActual->inscribirseCurso(cursoElegido);
+        }
+    }
+    void inicializarCursos() {
+        Curso* cursoIngles = new Curso("Ingles");
+        Etapa* etapa1 = new Etapa("Principiante");
+        Seccion* sec1 = new Seccion("Saludos e Introduccion");
+        Nivel* nivel1 = new Nivel("Leccion 1: Lo basico");
+
+        // --- 4. CARGAMOS LAS PREGUNTAS DESDE EL ARCHIVO TXT ---
+        nivel1->getBancoPreguntas()->cargarDesdeArchivo("preguntas_ingles.txt");
+
+        sec1->agregarNivel(nivel1);
+        etapa1->agregarSeccion(sec1);
+        cursoIngles->agregarEtapa(etapa1);
+        catalogoCursos.AddLast(cursoIngles);
+
+        if (usuarioActual->getCursoActual() == nullptr) {
+            usuarioActual->inscribirseCurso(cursoIngles);
         }
     }
 };

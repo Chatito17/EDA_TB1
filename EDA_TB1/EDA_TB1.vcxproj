@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BancoPreguntas.h" />
+    <ClInclude Include="Cola.h" />
     <ClInclude Include="Controladora.h" />
     <ClInclude Include="Curso.h" />
     <ClInclude Include="Division.h" />
@@ -146,6 +147,12 @@
     <ClInclude Include="Usuario.h" />
     <ClInclude Include="ActivarPlus.h" />
     <ClInclude Include="VidasExtra.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Usuario.txt" />
+    <Text Include="preguntas_Ingles.txt" />
+    <Text Include="PreguntasTipo2.txt" />
+    <Text Include="UsuariosBots.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

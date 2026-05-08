@@ -1,0 +1,10 @@
+Traduce 'Manzana' al ingles | apple
+Traduce 'Perro' al ingles | dog
+Traduce 'Gato' al ingles | cat
+Traduce 'Agua' al ingles | water
+Traduce 'Libro' al ingles | book
+Traduce 'Pajaro' al ingles | bird
+Traduce 'Lentes' al ingles | glasses
+Traduce 'Azul' al ingles | blue
+Traduce 'Verde' al ingles | verde
+Traduce 'Negro' al ingles | black
