@@ -126,11 +126,18 @@
     <ClCompile Include="EDA_TB1.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BancoPreguntas.h" />
     <ClInclude Include="Controladora.h" />
+    <ClInclude Include="Division.h" />
     <ClInclude Include="DuplicadorExp.h" />
+    <ClInclude Include="Examen.h" />
     <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="Pila.h" />
+    <ClInclude Include="Pregunta.h" />
     <ClInclude Include="Producto.h" />
     <ClInclude Include="ProtectorRacha.h" />
+    <ClInclude Include="Ranking.h" />
+    <ClInclude Include="ResultadoDetallado.h" />
     <ClInclude Include="Tienda.h" />
     <ClInclude Include="Usuario.h" />
     <ClInclude Include="ActivarPlus.h" />

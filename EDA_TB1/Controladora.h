@@ -5,12 +5,21 @@
 #include "Tienda.h"
 #include "Usuario.h"
 #include "Producto.h"
+#include "Division.h"
 
 class Controladora
 {
 private:
     Usuario* usuarioActual;
+    
+    //Tienda
     Tienda* tienda;
+
+    //Division
+    Division* division;
+
+    //Idiomas/Examenes
+    
 
 public:
     Controladora() {

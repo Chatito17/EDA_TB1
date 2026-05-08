@@ -5,6 +5,7 @@
 class Usuario
 {
 private:
+    string apodo;
     int vidas;
     int racha;
     int antiracha;
@@ -15,7 +16,8 @@ private:
     bool dobleExp;
 
 public:
-    Usuario() {
+    Usuario(string _apodo) {
+        apodo = _apodo;
         vidas = 3;
         racha = 1;
         antiracha = 0;
@@ -53,6 +55,7 @@ public:
 
     void verPerfil() {
         std::cout << "\n=== PERFIL DE USUARIO ===\n";
+        std::cout << "Apodo: " << apodo << "\n";
         std::cout << "Vidas: " << vidas << "\n";
         std::cout << "Gemas: " << gemas << "\n";
         std::cout << "Racha: " << racha << "\n";
@@ -61,5 +64,8 @@ public:
         std::cout << "Usuario Plus: " << (usuarioPlus ? "Si" : "No") << "\n";
         std::cout << "Doble EXP: " << (dobleExp ? "Si" : "No") << "\n";
         std::cout << "=========================\n";
+    }
+    std::string getNombre() {
+        return apodo;
     }
 };
