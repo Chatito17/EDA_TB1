@@ -6,30 +6,39 @@
 #include "Usuario.h"
 #include "Producto.h"
 #include "Division.h"
+#include "BancoPreguntas.h"
+#include "Examen.h"
 
 class Controladora
 {
 private:
     Usuario* usuarioActual;
-    
-    //Tienda
     Tienda* tienda;
-
-    //Division
     Division* division;
-
-    //Idiomas/Examenes
+    BancoPreguntas* banco;
     
 
 public:
     Controladora() {
-        usuarioActual = new Usuario();
+        // Se corrige el constructor pasando el apodo
+        usuarioActual = new Usuario("putito");
         tienda = new Tienda();
+        division = new Division();
+        banco = new BancoPreguntas();
+
+        // 1. Poblamos el banco de preguntas al iniciar
+        banco->agregar(new PreguntaEscribir("Traduce 'Manzana' al ingles", "Apple"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Perro' al ingles", "Dog"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Gato' al ingles", "Cat"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Libro' al ingles", "Book"));
+        banco->agregar(new PreguntaEscribir("Traduce 'Agua' al ingles", "Water"));
     }
 
     ~Controladora() {
         delete usuarioActual;
         delete tienda;
+        delete division;
+        delete banco;
     }
 
     void iniciar() {
@@ -38,9 +47,11 @@ public:
             std::cout << "\n[ MENU PRINCIPAL ]\n";
             std::cout << "1. Ver Perfil\n";
             std::cout << "2. Entrar a la Tienda\n";
-            std::cout << "3. Salir del programa\n";
+            std::cout << "3. Rendir Examen de Nivel\n";
+            std::cout << "4. Salir del programa\n";
             std::cout << "Elige una opcion: ";
             std::cin >> opcionMenu;
+            std::cin.ignore(); // Limpiar el buffer para el getline de los examenes
 
             switch (opcionMenu) {
             case 1:
@@ -50,12 +61,15 @@ public:
                 menuTienda();
                 break;
             case 3:
+                rendirExamen();
+                break;
+            case 4:
                 std::cout << "Saliendo del aplicativo...\n";
                 break;
             default:
                 std::cout << "Opcion no valida.\n";
             }
-        } while (opcionMenu != 3);
+        } while (opcionMenu != 4);
     }
 
 private:
@@ -77,5 +91,21 @@ private:
                 }
             }
         } while (opcionTienda != 0);
+    }
+    void rendirExamen() {
+        // Obtenemos 5 preguntas aleatorias del banco usando tu propia logica lambda
+        Pila<Pregunta*> preguntasExamen = banco->seleccionarParaExamen(5, [](Pregunta* p) {
+            return true; // Criterio: acepta todas las preguntas
+            });
+
+        // Ejecutamos el polimorfismo de Examen
+        ExamenNivel examen("Leccion de Ingles Basico");
+        ResultadoDetallado res = examen.hacerExamen(preguntasExamen);
+
+        // Integracion: Recompensamos al usuario si aprobo
+        if (res.getPuntaje() >= 3) { // 3 de 5 correcto
+            std::cout << ">>> Has ganado 50 gemas por tu buen rendimiento! <<<\n";
+            // Para que esto funcione, necesitas agregar un metodo sumarGemas(int) en Usuario.h
+        }
     }
 };

@@ -5,7 +5,7 @@
 class Usuario
 {
 private:
-    string apodo;
+    std::string apodo;
     int vidas;
     int racha;
     int antiracha;
@@ -16,7 +16,7 @@ private:
     bool dobleExp;
 
 public:
-    Usuario(string _apodo) {
+    Usuario(std::string _apodo) {
         apodo = _apodo;
         vidas = 3;
         racha = 1;

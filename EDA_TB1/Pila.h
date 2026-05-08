@@ -1,40 +1,48 @@
 #pragma once
-class Nodo {
+
+template <typename T>
+class NodoPila {
 public:
-	int dato;
-	Nodo* siguiente;
-	Nodo(int valor) {
-		dato = valor;
-		siguiente = nullptr;
-	}
+    T dato;
+    NodoPila<T>* siguiente;
+    NodoPila(T valor) : dato(valor), siguiente(nullptr) {}
 };
 
+template <typename T>
 class Pila {
 private:
-	Nodo* cima;
+    NodoPila<T>* cima;
 public:
-	Pila() {
-		cima = nullptr;
-	}
+    Pila() : cima(nullptr) {}
 
-	void push(int valor) {
-		Nodo* nuevo = new Nodo(valor);
-		nuevo->siguiente = cima;
-		cima = nuevo;
-	}
+    ~Pila() {
+        while (!estaVacia()) {
+            pop();
+        }
+    }
 
-	void pop() {
-		if (cima == nullptr) return;
-		Nodo* temp = cima;
-		cima = cima->siguiente;
-		delete temp;
-	}
+    void push(T valor) {
+        NodoPila<T>* nuevo = new NodoPila<T>(valor);
+        nuevo->siguiente = cima;
+        cima = nuevo;
+    }
 
-	int top() {
-		return cima ? cima->dato : -1;
-	}
+    // pop() ahora debe retornar el dato para que Pregunta* p = pila.pop() funcione
+    T pop() {
+        if (cima == nullptr) return T();
+        NodoPila<T>* temp = cima;
+        T valor = temp->dato;
+        cima = cima->siguiente;
+        delete temp;
+        return valor;
+    }
 
-	bool isEmpty() {
-		return cima == nullptr;
-	}
+    T top() {
+        return cima ? cima->dato : T();
+    }
+
+    // Se renombra para coincidir con Examen.h
+    bool estaVacia() {
+        return cima == nullptr;
+    }
 };
