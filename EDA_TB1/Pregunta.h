@@ -117,7 +117,7 @@ public:
                 << conceptos[i] << "   -->   "
                 << definiciones[i] << std::endl;
         }
-        std::cout << "  Escribe el numero correcto: ";
+        std::cout << "  Escribe la secuencia correcta: ";
     }
 
     int getCantidad() const { return cantidad; }
