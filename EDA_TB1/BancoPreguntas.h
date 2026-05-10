@@ -35,7 +35,6 @@ public:
     }
 
     //Uso de LAMBDA
-
     template<typename Criterio>
     Pila<Pregunta*> seleccionarParaExamen(int n, Criterio criterio)
     {

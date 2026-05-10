@@ -53,7 +53,7 @@ public:
     }
 
     void mostrarRanking() {
-        ordenarRanking(); // Siempre se ordena antes de mostrar la tabla
+        ordenarRanking();
         for (int i = 0; i < listaUsuarios.getLongitud(); i++) {
             Usuario* u = listaUsuarios.GetPos(i);
             std::cout << i + 1 << ". " << u->getNombre() << " \t| EXP: " << u->getExp() << "\n";
@@ -64,7 +64,6 @@ public:
         int n = listaUsuarios.getLongitud();
         if (n <= 1) return;
 
-        // Extraemos a un arreglo para ordenar rápidamente O(1) en acceso
         Usuario** arr = new Usuario * [n];
         for (int i = 0; i < n; i++) {
             arr[i] = listaUsuarios.GetPos(i);
@@ -72,8 +71,7 @@ public:
 
         quickSort(arr, 0, n - 1);
 
-        // Reconstruimos la lista ordenada
-        NodoList<Usuario*>* nodoActual = listaUsuarios.NodeAt(0); // Tomamos la cabeza
+        NodoList<Usuario*>* nodoActual = listaUsuarios.NodeAt(0);
         for (int i = 0; i < n; i++) {
             if (nodoActual != nullptr) {
                 nodoActual->dato = arr[i];

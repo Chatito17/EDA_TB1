@@ -5,7 +5,7 @@
 class Nivel {
 private:
     std::string nombreNivel;
-    BancoPreguntas* banco; // Preguntas exclusivas de este nivel
+    BancoPreguntas* banco;
 
 public:
     Nivel(std::string nombre) : nombreNivel(nombre) {
@@ -13,7 +13,7 @@ public:
     }
 
     ~Nivel() {
-        delete banco; // El BancoPreguntas ya destruye las Preguntas internamente
+        delete banco;
     }
 
     std::string getNombre() { return nombreNivel; }

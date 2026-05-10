@@ -27,20 +27,19 @@ public:
                 delete p;
         }
     }
+
+    // Algoritmo HEAP SORT / Recursividad
     void heapify(Producto** arr, int n, int i) {
         int masGrande = i;
         int izq = 2 * i + 1;
         int der = 2 * i + 2;
 
-        // Si el hijo izquierdo es mayor
         if (izq < n && arr[izq]->getCosto() > arr[masGrande]->getCosto())
             masGrande = izq;
 
-        // Si el hijo derecho es mayor
         if (der < n && arr[der]->getCosto() > arr[masGrande]->getCosto())
             masGrande = der;
 
-        // Si el más grande no es la raíz, intercambiamos y aplicamos recursión
         if (masGrande != i) {
             Producto* swap = arr[i];
             arr[i] = arr[masGrande];
@@ -53,28 +52,22 @@ public:
         int n = catalogo.getLongitud();
         if (n <= 1) return;
 
-        // 1. Extraemos a un arreglo nativo
         Producto** arr = new Producto * [n];
         for (int i = 0; i < n; i++) {
             arr[i] = catalogo.GetPos(i);
         }
 
-        // 2. Construimos el Heap (reordenamos el arreglo)
         for (int i = n / 2 - 1; i >= 0; i--)
             heapify(arr, n, i);
 
-        // 3. Extraemos elementos del heap uno por uno
         for (int i = n - 1; i > 0; i--) {
-            // Movemos la raíz (el mayor) al final
             Producto* temp = arr[0];
             arr[0] = arr[i];
             arr[i] = temp;
 
-            // Llamamos heapify a la raíz reduciendo el heap
             heapify(arr, i, 0);
         }
 
-        // 4. Reconstruimos la LinkedList secuencialmente O(N)
         for (int i = 0; i < n; i++) {
             catalogo.ModifyPos(arr[i], i);
         }

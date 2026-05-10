@@ -53,7 +53,7 @@ public:
     void sumarGemas(int cantidad) { gemas += cantidad; }
     void setProtectorRacha(bool estado) { proteRacha = estado; }
     void setUsuarioPlus(bool estado) { usuarioPlus = estado; }
-    void activarDuplicador() { dobleExp = true; std::cout << " [Buff] EXP x2 Activada!\n"; }
+    void activarDuplicador() { dobleExp = true; std::cout << " EXP x2 Activada!\n"; }
 
     void guardarProgreso() {
         std::ofstream archivo("Usuario_" + apodo + ".txt");
@@ -71,7 +71,6 @@ public:
             archivoE >> vidas >> racha >> gemas >> exp >> indiceEtapaActual >> indiceSeccionActual >> indiceNivelActual;
             archivoE.close();
             std::cout << "Datos cargados exitosamente, " << apodo << "!\n";
-          
         }
         else {
             std::cout << "No se encontraron los datos, creando usuario nuevo...\n";
@@ -85,11 +84,8 @@ public:
             }
             else {
                 std::cout << "Error critico, no se puede crear archivo (calaverita).\n";
-            }
-            
+            } 
         }
-     
-        
     }
     void sumarExp(int cantidad) {
         if (dobleExp) cantidad *= 2;
@@ -110,11 +106,11 @@ public:
 
     void comprarProducto(Producto* p) {
         if (p && gastarGemas(p->getCosto())) {
-            std::cout << "\n>>> Compraste con exito: " << p->getNombre() << " <<<\n";
+            std::cout << "\nCompraste con exito: " << p->getNombre() << " <<<\n";
             p->activar(this);
         }
         else if (p) {
-            std::cout << "\n[!] No tienes suficientes gemas para " << p->getNombre() << ".\n";
+            std::cout << "\nNo tienes suficientes gemas para " << p->getNombre() << ".\n";
         }
     }
 
@@ -133,7 +129,7 @@ public:
         indiceEtapaActual = 0;
         indiceSeccionActual = 0;
         indiceNivelActual = 0;
-        std::cout << "\n>>> Te has inscrito exitosamente al curso de " << curso->getIdioma() << " <<<\n";
+        std::cout << "\nTe has inscrito exitosamente al curso de " << curso->getIdioma() << "\n";
     }
     Curso* getCursoActual() { return cursoActual; }
     int getEtapaActual() { return indiceEtapaActual; }

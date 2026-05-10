@@ -3,49 +3,37 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include "LinkedList.h"
 
-// ============================================================
-// Clase Base Abstracta: Pregunta
-// Contiene el enunciado y la respuesta correcta.
-// Las clases hijas implementan comprobar() y mostrar().
-// ============================================================
 class Pregunta {
 protected:
     std::string enunciado;
     std::string respuestaCorrecta;
 
 public:
-    Pregunta(const std::string& enunciado, const std::string& respuesta)
-        : enunciado(enunciado), respuestaCorrecta(respuesta) {
+    Pregunta(std::string enunciado, std::string respuesta) {
+        this->enunciado = enunciado;
+        this->respuestaCorrecta = respuesta;
     }
 
     virtual ~Pregunta() {}
 
-    // Método virtual puro -> clase abstracta (no instanciable)
     virtual bool comprobar(std::string entrada) = 0;
-    virtual void mostrar() const = 0;
+    virtual void mostrar() = 0;
 
-    std::string getEnunciado()        const { return enunciado; }
-    std::string getRespuestaCorrecta() const { return respuestaCorrecta; }
+    std::string getEnunciado() { return enunciado; }
+    std::string getRespuestaCorrecta() { return respuestaCorrecta; }
 };
 
-
-// ============================================================
-// PreguntaEscribir
-// El usuario escribe una traducción o palabra directamente.
-// Integra Lambda 1: normaliza la entrada antes de comparar
-// (quita espacios extremos y convierte a minúsculas).
-// ============================================================
 class PreguntaEscribir : public Pregunta {
 public:
-    PreguntaEscribir(const std::string& enunciado,
-        const std::string& respuesta)
+    PreguntaEscribir(std::string enunciado, std::string respuesta)
         : Pregunta(enunciado, respuesta) {
     }
 
-    // Complejidad: O(n), n = longitud de la cadena
     bool comprobar(std::string entrada) override {
-        // Lambda 1: trim de extremos + lowercase
+      
+        // Uso de LAMBDA
         auto normalizar = [](std::string s) -> std::string {
             size_t ini = s.find_first_not_of(" \t\r\n");
             if (ini == std::string::npos) return "";
@@ -58,65 +46,57 @@ public:
         return normalizar(entrada) == normalizar(respuestaCorrecta);
     }
 
-    void mostrar() const override {
+    void mostrar() override {
         std::cout << "  [Escribir] " << enunciado << std::endl;
     }
 };
 
+struct ParRelacion {
+    std::string concepto;
+    std::string definicion;
 
-// ============================================================
-// PreguntaRelacionar
-// Presenta N conceptos y N definiciones para emparejar.
-// Se usan arreglos dinámicos (sin vector) para manejar los pares.
-// El usuario escribe el número de la definición que corresponde
-// al concepto señalado en el enunciado.
-// ============================================================
+    ParRelacion(std::string c, std::string d) {
+        concepto = c;
+        definicion = d;
+    }
+};
+
 class PreguntaRelacionar : public Pregunta {
 private:
-    std::string* conceptos;    // arreglo dinámico columna izquierda
-    std::string* definiciones; // arreglo dinámico columna derecha
-    int          cantidad;     // número de pares
+    LinkedList<ParRelacion*> listaPares;
 
 public:
-    // Constructor: recibe arreglos y los copia internamente
-    PreguntaRelacionar(const std::string& enunciado,
-        const std::string& respuesta,
-        const std::string* conceptos,
-        const std::string* definiciones,
-        int cantidad)
-        : Pregunta(enunciado, respuesta), cantidad(cantidad)
-    {
-        // Copia profunda: no dependemos de arreglos externos
-        this->conceptos = new std::string[cantidad];
-        this->definiciones = new std::string[cantidad];
-        for (int i = 0; i < cantidad; i++) {
-            this->conceptos[i] = conceptos[i];
-            this->definiciones[i] = definiciones[i];
+    PreguntaRelacionar(std::string enunciado, std::string respuesta)
+        : Pregunta(enunciado, respuesta) {
+    }
+
+    ~PreguntaRelacionar() override {
+        for (int i = 0; i < listaPares.getLongitud(); i++) {
+            delete listaPares.GetPos(i);
         }
     }
 
-    // Destructor: libera los arreglos dinámicos
-    ~PreguntaRelacionar() override {
-        delete[] conceptos;
-        delete[] definiciones;
+    void agregarPar(std::string concepto, std::string definicion) {
+        ParRelacion* nuevoPar = new ParRelacion(concepto, definicion);
+        listaPares.AddLast(nuevoPar);
     }
 
-    // Complejidad: O(1) — solo compara el índice ingresado
     bool comprobar(std::string entrada) override {
         return entrada == respuestaCorrecta;
     }
 
-    void mostrar() const override {
+    void mostrar() override {
         std::cout << "  [Relacionar] " << enunciado << std::endl;
         std::cout << "  Concepto  |  Opciones de definicion" << std::endl;
-        for (int i = 0; i < cantidad; i++) {
+
+        for (int i = 0; i < listaPares.getLongitud(); i++) {
+            ParRelacion* par = listaPares.GetPos(i);
             std::cout << "    " << (i + 1) << ". "
-                << conceptos[i] << "   -->   "
-                << definiciones[i] << std::endl;
+                << par->concepto << "   -->   "
+                << par->definicion << std::endl;
         }
         std::cout << "  Escribe la secuencia correcta: ";
     }
 
-    int getCantidad() const { return cantidad; }
+    int getCantidad() { return listaPares.getLongitud(); }
 };
-

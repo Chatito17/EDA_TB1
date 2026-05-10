@@ -17,7 +17,6 @@ private:
     Tienda* tienda;
     Division* ligaActual;
 
-    LinkedList<Usuario*> competidores;
     LinkedList<Curso*> catalogoCursos;
 
 public:
@@ -42,9 +41,6 @@ public:
         delete tienda;
         delete ligaActual;
 
-        for (int i = 0; i < competidores.getLongitud(); i++) {
-            delete competidores.GetPos(i);
-        }
         for (int i = 0; i < catalogoCursos.getLongitud(); i++) {
             delete catalogoCursos.GetPos(i);
         }
@@ -91,17 +87,12 @@ public:
     }
 
 private:
-    
-
+ 
     void iniciarSimulacionLiga() {
         ligaActual->agregarParticipante(usuarioActual);
         Usuario* bot1 = new Usuario("Duo_Lover"); bot1->sumarExp(150);
         Usuario* bot2 = new Usuario("EnglishPro"); bot2->sumarExp(80);
         Usuario* bot3 = new Usuario("Gamer2025"); bot3->sumarExp(30);
-
-        competidores.AddLast(bot1);
-        competidores.AddLast(bot2);
-        competidores.AddLast(bot3);
 
         ligaActual->agregarParticipante(bot1);
         ligaActual->agregarParticipante(bot2);
@@ -176,8 +167,10 @@ private:
         Nivel* nActual = sActual->getNivel(usuarioActual->getNivelActual());
         BancoPreguntas* bancoLocal = nActual->getBancoPreguntas();
 
+        // Uso de lambda
+
         Pila<Pregunta*> preguntasExamen = bancoLocal->seleccionarParaExamen(examen->getCantPreguntas(), [](Pregunta* p) {
-            return true;
+            return true;;
             });
 
         ResultadoDetallado res = examen->hacerExamen(preguntasExamen, usuarioActual);
@@ -218,6 +211,7 @@ private:
         sec1->agregarNivel(nivel1);
         etapa1->agregarSeccion(sec1);
         cursoIngles->agregarEtapa(etapa1);
+
         catalogoCursos.AddLast(cursoIngles);
 
         if (usuarioActual->getCursoActual() == nullptr) {
