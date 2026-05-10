@@ -57,8 +57,7 @@ public:
     }
     
 
-    // Agregado lambda
-    // Método 3 (Criterio B y D): Procesar con Lambda
+    // Uso de Lambda
     template <typename Accion>
     void procesarTodos(Accion accion) {
         NodoCola<T>* actual = frente;

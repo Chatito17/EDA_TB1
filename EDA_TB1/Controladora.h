@@ -34,15 +34,14 @@ public:
     }
 
     ~Controladora() {
-        // 2. GUARDAR PROGRESO AL SALIR
         usuarioActual->guardarProgreso();
 
-        // 3. GUARDAR EL RANKING DE LA LIGA AL SALIR
         ligaActual->getRanking()->guardarTabla(ligaActual->getNombreStr());
 
         delete usuarioActual;
         delete tienda;
         delete ligaActual;
+
         for (int i = 0; i < competidores.getLongitud(); i++) {
             delete competidores.GetPos(i);
         }
@@ -54,7 +53,7 @@ public:
     void iniciar() {
         int opcionMenu;
         do {
-            std::cout << "\n[ MENU PRINCIPAL - CLON DUOLINGO ]\n";
+            std::cout << "\n=== MENU PRINCIPAL ===\n";
             std::cout << "1. Ver Perfil y Progreso actual\n";
             std::cout << "2. Explorar e Inscribirse a Cursos\n"; 
             std::cout << "3. Entrar a la Tienda\n";
@@ -68,10 +67,10 @@ public:
             switch(opcionMenu) {
             case 1:
                 usuarioActual->verPerfil();
-                usuarioActual->verProgreso(); // Muestra nivel, etapa, etc.
+                usuarioActual->verProgreso();
                 break;
             case 2:
-                menuCursos(); // Llama al nuevo menú
+                menuCursos();
                 break;
             case 3:
                 menuTienda();
@@ -120,8 +119,7 @@ private:
                 Producto* productoElegido = tienda->getProducto(opcionTienda - 1);
                 if (productoElegido != nullptr) {
                     usuarioActual->comprarProducto(productoElegido);
-                    usuarioActual->agregarNotificacion("Has comprado: " + productoElegido->getNombre());
-                }
+                     }
                 else {
                     std::cout << "Producto inexistente.\n";
                 }
@@ -130,37 +128,33 @@ private:
 
     }
 
-    // --- NUEVO METODO PARA ELEGIR TIPO DE EXAMEN ---
     void menuExamen() {
-        // Validación 1: Verificar Vidas
         if (usuarioActual->getVidas() <= 0) {
-            std::cout << "\n[!] No te quedan corazones. Ve a la tienda a comprar vidas extra para continuar aprendiendo.\n";
+            std::cout << "\nNo tienes vidas, intentelo despues.\n";
             return;
         }
 
-        // Validación 2: Verificar inscripción al curso
         Curso* c = usuarioActual->getCursoActual();
         if (c == nullptr) {
-            std::cout << "\n[!] Debes inscribirte a un curso primero (Opcion 2 del menu).\n";
+            std::cout << "\nDebes inscribirte a un curso primero.\n";
             return;
         }
         if (usuarioActual->getEtapaActual() >= c->getCantidadEtapas()) {
-            std::cout << "\n[!] ¡Felicidades! Ya has completado todo el curso de " << c->getIdioma() << ".\n";
+            std::cout << "\n¡Felicidades! Ya has completado todo el curso de " << c->getIdioma() << ".\n";
             return;
         }
 
         int tipoExamen;
         std::cout << "\n=== SELECCION DE EXAMEN ===\n";
-        std::cout << "1. Examen de Nivel (Leccion Normal)\n";
-        std::cout << "2. Examen de Etapa (Salto rapido)\n";
-        std::cout << "3. Examen de Certificado (Final)\n";
+        std::cout << "1. Examen de Nivel\n";
+        std::cout << "2. Examen de Etapa\n";
+        std::cout << "3. Examen de Certificado\n";
         std::cout << "Elige el tipo de examen: ";
         std::cin >> tipoExamen;
         std::cin.ignore();
 
         Examen* examen = nullptr;
 
-        // Instanciación Polimórfica (Ya no hardcodeamos las variables aquí)
         switch (tipoExamen) {
         case 1:
             examen = new ExamenNivel();
@@ -183,31 +177,29 @@ private:
         Nivel* nActual = sActual->getNivel(usuarioActual->getNivelActual());
         BancoPreguntas* bancoLocal = nActual->getBancoPreguntas();
 
-        // Extraer las preguntas del banco local según la cantidad dictada por el examen
         Pila<Pregunta*> preguntasExamen = bancoLocal->seleccionarParaExamen(examen->getCantPreguntas(), [](Pregunta* p) {
             return true;
             });
 
-        // Ejecutar enviando al usuario
         ResultadoDetallado res = examen->hacerExamen(preguntasExamen, usuarioActual);
 
-        // Lógica de Recompensas y Avance
         int expGanada = res.getPuntaje() * examen->getMultiplicadorExp();
         if (expGanada > 0) {
             usuarioActual->sumarExp(expGanada);
-            std::cout << ">>> Has ganado " << expGanada << " de EXP! Revisa el Ranking de Ligas <<<\n";
+            std::cout << "Prueba no superada, pero\n";
+            std::cout << "Has ganado " << expGanada << " de EXP!\n";
         }
 
-        // Se aprueba con más del 50%
         int mitad = (examen->getCantPreguntas() / 2) + 1;
 
         if (res.getPuntaje() >= mitad && usuarioActual->getVidas() > 0) {
-            std::cout << "\n>>> ¡PRUEBA SUPERADA! <<<\n";
+            std::cout << "\nPrueba superada\n";
             if (tipoExamen == 1) {
                 usuarioActual->avanzarNivel();
             }
-            // Aquí puedes agregar la lógica si pasa el de Etapa para llamar a usuarioActual->avanzarEtapa()
-            usuarioActual->agregarNotificacion("¡Felicidades! Ganaste " + std::to_string(examen->getRecomGemas()) + " gemas.");
+            else if (tipoExamen == 2) {
+               // usuarioActual->avanzarEtapa();
+            }
             usuarioActual->sumarGemas(examen->getRecomGemas());
         }
         else if (usuarioActual->getVidas() > 0) {
@@ -245,7 +237,6 @@ private:
         Seccion* sec1 = new Seccion("Saludos e Introduccion");
         Nivel* nivel1 = new Nivel("Leccion 1: Lo basico");
 
-        // --- 4. CARGAMOS LAS PREGUNTAS DESDE EL ARCHIVO TXT ---
         nivel1->getBancoPreguntas()->cargarDesdeArchivo("Preguntas_Ingles.txt");
 
         sec1->agregarNivel(nivel1);

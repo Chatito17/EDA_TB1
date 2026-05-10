@@ -27,8 +27,6 @@ private:
     int indiceSeccionActual;
     int indiceNivelActual;
 
-    Cola<std::string> notificaciones;
-
 public:
     Usuario(std::string _apodo) {
         apodo = _apodo;
@@ -129,8 +127,6 @@ public:
         std::cout << "EXP: " << exp << "\n";
         std::cout << "Protector de Racha: " << (proteRacha ? "Activado" : "Desactivado") << "\n";
         std::cout << "Usuario Plus: " << (usuarioPlus ? "Si" : "No") << "\n";
-        std::cout << "=========================\n";
-        leerNotificaciones();
     }
     void inscribirseCurso(Curso* curso) {
         cursoActual = curso;
@@ -145,29 +141,25 @@ public:
     int getNivelActual() { return indiceNivelActual; }
 
     void avanzarNivel() {
-
         if (!cursoActual) return;
         if (indiceEtapaActual >= cursoActual->getCantidadEtapas()) return;
 
         indiceNivelActual++;
 
-        // CORRECCIÓN: Faltaba definir etapaActualObj para prevenir el Null Pointer / Crasheo
         Etapa* etapaActualObj = cursoActual->getEtapa(indiceEtapaActual);
         Seccion* secActual = etapaActualObj->getSeccion(indiceSeccionActual);
 
-        // Si superamos todos los niveles de esta sección...
         if (indiceNivelActual >= secActual->getCantidadNiveles()) {
             indiceNivelActual = 0;
             indiceSeccionActual++;
 
-            // Si superamos todas las secciones de la etapa...
-            if (indiceSeccionActual >= etapaActualObj->getCantidadSecciones()) {
+           if (indiceSeccionActual >= etapaActualObj->getCantidadSecciones()) {
                 indiceSeccionActual = 0;
-                indiceEtapaActual++; // Pasamos a la siguiente gran etapa del curso
-                std::cout << "\n>>> ¡Has avanzado a una nueva ETAPA! <<<\n";
+                indiceEtapaActual++; 
+                std::cout << "\nHas desbloqueado una nueva ETAPA!\n";
             }
             else {
-                std::cout << "\n>>> ¡Has desbloqueado una nueva SECCIÓN! <<<\n";
+                std::cout << "\nHas desbloqueado una nueva SECCION!\n";
             }
         }
     }
@@ -183,30 +175,5 @@ public:
         std::cout << "Seccion: " << indiceSeccionActual + 1 << "\n";
         std::cout << "Nivel: " << indiceNivelActual + 1 << "\n";
         std::cout << "-----------------------\n";
-    }
-
-    void agregarNotificacion(std::string msj) {
-        notificaciones.encolar(msj);
-    }
-
-    void leerNotificaciones() {
-        if (notificaciones.estaVacia()) {
-            std::cout << "No tienes notificaciones nuevas.\n";
-            return;
-        }
-        std::cout << "\n--- BANDEJA DE ENTRADA ---\n";
-
-        // Uso de Lambda para cumplir rúbrica
-        auto imprimirMsj = [](std::string msj) {
-            std::cout << "[Mensaje] " << msj << "\n";
-            };
-
-        notificaciones.procesarTodos(imprimirMsj);
-
-        // Vaciamos la cola tras leer
-        while (!notificaciones.estaVacia()) {
-            notificaciones.desencolar();
-        }
-        std::cout << "--------------------------\n";
     }
 };
