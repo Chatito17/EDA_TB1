@@ -136,6 +136,7 @@
     <ClInclude Include="Examen.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Nivel.h" />
+    <ClInclude Include="Nodo.h" />
     <ClInclude Include="Pila.h" />
     <ClInclude Include="Pregunta.h" />
     <ClInclude Include="Producto.h" />

@@ -1,15 +1,11 @@
 #pragma once
-#include <functional>
 
 template <typename T>
-
-class Node {
+class Nodo {
 public:
-	T data;
-	Node<T>* next;
-	
-	Node(T data) : data(data), next(nullptr) {}
-	Node(T data, Node<T>* next) : data(data), next(next) {}
+	T dato;
+	Nodo<T>* siguiente;
+	Nodo(T valor) : dato(valor), siguiente(nullptr) {}
 };
 
 template <typename T>
@@ -18,10 +14,18 @@ private:
 	Node<T>* head;
 	int length;
 
-	Node<T>* buscarRecursivo(Node<T>* nodoActual, std::function<bool(T)> criterio) {
-		if (nodoActual == nullptr) return nullptr; // Caso base: no encontrado
-		if (criterio(nodoActual->data)) return nodoActual; // Caso base: encontrado
-		return buscarRecursivo(nodoActual->next, criterio); // Llamada recursiva
+	Node<T>* NodeAt(int pos) {
+		if (pos >= length) {
+			std::cout << "No existe posicion, debe ser menor al tamanio de la lista...\n";
+			return nullptr;
+		}
+		int index = 0;
+		Node<T>* aux = head;
+		while (index < pos) {
+			aux = aux->next;
+			index++;
+		}
+		return aux;
 	}
 
 public:
@@ -49,10 +53,12 @@ public:
 		std::cout << std::endl;
 	}
 
+	// La longitud
 	int Length() {
 		return length;
 	}
 
+	// Es vacío
 	bool IsEmpty() {
 		return length == 0;
 	}
@@ -64,13 +70,16 @@ public:
 	}
 
 	void AddPos(T data, int pos) {
-		if (pos == 0)
+		// Ubicamos la posición anterior
+		if (pos == 0) // Agrego al inicio
 			AddFirst(data);
 		else
 		{
 			Node<T>* nodeBefore = NodeAt(pos - 1);
 			Node<T>* nodeAfter = nodeBefore->next;
+			// El nodo nuevo apunta a la siguiente posición
 			Node<T>* node = new Node<T>(data, nodeAfter);
+			// El nodo anterior apunta al nuevo nodo.
 			nodeBefore->next = node;
 		}
 		length++;
@@ -82,6 +91,7 @@ public:
 			head = node;
 		}
 		else {
+			// Buscamos el último nodo y lo agregamos
 			Node<T>* nodeLast = NodeAt(length - 1);
 			nodeLast->next = node;
 		}
@@ -125,13 +135,14 @@ public:
 			std::cout << "No se puede eliminar un nodo en una lista enlazada vacía\n";
 			return;
 		}
-		if (pos == 0)
+		if (pos == 0) // Remuevo el inicio
 			RemoveFirst();
 		else {
 			Node<T>* nodeBefore = NodeAt(pos - 1);
 			Node<T>* nodeErase = NodeAt(pos);
 			if (nodeBefore != nullptr && nodeErase != nullptr) {
 				nodeBefore->next = nodeErase->next;
+				// Podemos eliminar con tranquilidad el nodo elegido
 				delete nodeErase;
 				length--;
 			}
@@ -150,8 +161,11 @@ public:
 			length--;
 		}
 		else {
+			// Busca el penúltimo nodo, lo guardamos
 			Node<T>* nodePreviousLast = NodeAt(length - 2);
 			if (nodePreviousLast != nullptr) {
+				// Penúltimo nodo apunte a nulo y hacemos que el último nodo
+				// sea eliminado.
 				Node<T>* nodeLast = nodePreviousLast->next;
 				nodePreviousLast->next = nullptr;
 				delete nodeLast;
@@ -160,89 +174,8 @@ public:
 		}
 	}
 
-	T GetFirst() {
-		Node<T>* first = NodeAt(0);
-		return first != nullptr ? first->data : T();
-	}
-
 	T GetPos(int pos) {
 		Node<T>* node = NodeAt(pos);
 		return node != nullptr ? node->data : T();
-	}
-
-	T GetLast() {
-		Node<T>* last = NodeAt(length - 1);
-		return last != nullptr ? last->data : T();
-	}
-	Node<T>* NodeAt(int pos) {
-		if (pos >= length) {
-			return nullptr;
-		}
-		int index = 0;
-		Node<T>* aux = head;
-		while (index < pos) {
-			aux = aux->next;
-			index++;
-		}
-		return aux;
-	}
-	T FindIf(std::function<bool(T)> condicion) {
-		Node<T>* aux = head;
-		while (aux != nullptr) {
-			if (condicion(aux->data)) {
-				return aux->data;
-			}
-			aux = aux->next;
-		}
-		return T(); // Retorna nulo/vacío si no encuentra
-	}
-
-	// Método extra 2: Contar elementos que cumplan una condición
-	int CountIf(std::function<bool(T)> condicion) {
-		int count = 0;
-		Node<T>* aux = head;
-		while (aux != nullptr) {
-			if (condicion(aux->data)) count++;
-			aux = aux->next;
-		}
-		return count;
-	}
-
-	// Método extra 3: Algoritmo Avanzado -> ShellSort Genérico
-	void ShellSort(std::function<bool(T, T)> comp) {
-		int n = length;
-		if (n <= 1) return;
-
-		// Convertimos a array temporal para ordenarlo en O(n log n) sin ralentización de punteros
-		T* arr = new T[n];
-		Node<T>* current = head;
-		for (int i = 0; i < n; i++) {
-			arr[i] = current->data;
-			current = current->next;
-		}
-
-		// Lógica matemática del ShellSort
-		for (int gap = n / 2; gap > 0; gap /= 2) {
-			for (int i = gap; i < n; i += 1) {
-				T temp = arr[i];
-				int j;
-				for (j = i; j >= gap && comp(temp, arr[j - gap]); j -= gap) {
-					arr[j] = arr[j - gap];
-				}
-				arr[j] = temp;
-			}
-		}
-
-		// Reconstruimos la lista con los datos ordenados
-		current = head;
-		for (int i = 0; i < n; i++) {
-			current->data = arr[i];
-			current = current->next;
-		}
-		delete[] arr;
-	}
-	T FindIfRecursivo(std::function<bool(T)> condicion) {
-		Node<T>* resultado = buscarRecursivo(head, condicion);
-		return resultado != nullptr ? resultado->data : T();
 	}
 };

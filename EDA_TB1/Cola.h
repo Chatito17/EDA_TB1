@@ -1,58 +1,65 @@
 #pragma once
 #include <iostream>
-#include <functional>
 
 template <typename T>
-class NodoCola {
+class Nodo {
 public:
     T dato;
-    NodoCola<T>* siguiente;
-    NodoCola(T valor) : dato(valor), siguiente(nullptr) {}
+    Nodo<T>* siguiente;
+    Nodo(T valor) : dato(valor), siguiente(nullptr) {}
 };
 
 template <typename T>
 class Cola {
 private:
-    NodoCola<T>* frente;
-    NodoCola<T>* final;
+    Nodo<T>* frente;
+    Nodo<T>* final;
     int longitud;
 
 public:
-    Cola() : frente(nullptr), final(nullptr), longitud(0) {}
+    Cola() {
+        frente = nullptr;
+        final = nullptr;
+        longitud = 0;
+    }
 
     ~Cola() {
         while (!estaVacia()) {
             desencolar();
         }
     }
-
-    // Método 1: Encolar
     void encolar(T valor) {
-        NodoCola<T>* nuevo = new NodoCola<T>(valor);
-        if (estaVacia()) {
+        Nodo* nuevo = new Nodo(valor);
+        if (final == nullptr) {
             frente = final = nuevo;
+            return;
         }
-        else {
-            final->siguiente = nuevo;
-            final = nuevo;
-        }
+        final->siguiente = nuevo;
+        final = nuevo;
         longitud++;
     }
-
-    // Método 2: Desencolar
     T desencolar() {
-        if (estaVacia()) return T();
-        NodoCola<T>* temp = frente;
+        if (frente == nullptr) return T();
+        Nodo* temp = frente;
         T valor = temp->dato;
         frente = frente->siguiente;
-        if (frente == nullptr) final = nullptr;
+        if (frente == nullptr)
+            final = nullptr;
         delete temp;
         longitud--;
         return valor;
     }
 
-    bool estaVacia() const { return frente == nullptr; }
+    int frente() {
+        return frente ? frente->dato : -1;
+    }
 
+    bool estaVacia() {
+        return frente == nullptr;
+    }
+    
+
+    // Agregado lambda
     // Método 3 (Criterio B y D): Procesar con Lambda
     void procesarTodos(std::function<void(T)> accion) {
         NodoCola<T>* actual = frente;
