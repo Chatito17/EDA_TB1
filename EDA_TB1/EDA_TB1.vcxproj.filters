@@ -94,7 +94,7 @@
     <Text Include="UsuariosBots.txt">
       <Filter>Archivos de recursos</Filter>
     </Text>
-    <Text Include="Usuario.txt">
+    <Text Include="Usuario_Anfitrion.txt">
       <Filter>Archivos de recursos</Filter>
     </Text>
   </ItemGroup>

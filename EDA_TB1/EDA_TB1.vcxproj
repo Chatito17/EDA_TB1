@@ -149,7 +149,7 @@
     <ClInclude Include="VidasExtra.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Usuario.txt" />
+    <Text Include="Usuario_Anfitrion.txt" />
     <Text Include="preguntas_Ingles.txt" />
     <Text Include="PreguntasTipo2.txt" />
     <Text Include="UsuariosBots.txt" />

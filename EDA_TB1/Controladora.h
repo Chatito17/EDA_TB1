@@ -22,9 +22,8 @@ private:
 
 public:
     Controladora() {
-        usuarioActual = new Usuario("Cristian"); // Tu nombre de usuario
+        usuarioActual = new Usuario("Anfitrion");
 
-        // 1. INTENTAR CARGAR PROGRESO
         usuarioActual->cargarProgreso();
 
         tienda = new Tienda();

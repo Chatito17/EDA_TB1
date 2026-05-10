@@ -59,25 +59,38 @@ public:
     void guardarProgreso() {
         std::ofstream archivo("Usuario_" + apodo + ".txt");
         if (archivo.is_open()) {
-            // Guardamos los datos separados por saltos de línea
             archivo << apodo << "\n" << vidas << "\n" << racha << "\n"
                 << gemas << "\n" << exp << "\n"
                 << indiceEtapaActual << "\n" << indiceSeccionActual << "\n" << indiceNivelActual << "\n";
             archivo.close();
         }
     }
-    bool cargarProgreso() {
-        std::ifstream archivo("Usuario_" + apodo + ".txt");
-        if (archivo.is_open()) {
-            std::getline(archivo, apodo);
-            archivo >> vidas >> racha >> gemas >> exp >> indiceEtapaActual >> indiceSeccionActual >> indiceNivelActual;
-            archivo.close();
-            std::cout << "[INFO] Partida cargada exitosamente. Bienvenido de nuevo, " << apodo << "!\n";
-            return true;
+    void cargarProgreso() {
+        std::ifstream archivoE("Usuario_" + apodo + ".txt");
+        if (archivoE.is_open()) {
+            std::getline(archivoE, apodo);
+            archivoE >> vidas >> racha >> gemas >> exp >> indiceEtapaActual >> indiceSeccionActual >> indiceNivelActual;
+            archivoE.close();
+            std::cout << "Datos cargados exitosamente, " << apodo << "!\n";
+          
         }
-        // Si no existe el archivo, es un usuario nuevo
-        std::cout << "[INFO] No se encontro partida previa. Creando nuevo perfil...\n";
-        return false;
+        else {
+            std::cout << "No se encontraron los datos, creando usuario nuevo...\n";
+            std::ofstream archivoS("Usuario_" + apodo + ".txt");
+            
+            if (archivoS.is_open()) {
+                archivoS << apodo << "\n" << 3 << "\n" << 0 << "\n"
+                    << 50 << "\n" << 0 << "\n"
+                    << 1 << "\n" << 1 << "\n" << 1 << "\n";
+                archivoS.close();
+            }
+            else {
+                std::cout << "Error critico, no se puede crear archivo (calaverita).\n";
+            }
+            
+        }
+     
+        
     }
     void sumarExp(int cantidad) {
         if (dobleExp) cantidad *= 2;
