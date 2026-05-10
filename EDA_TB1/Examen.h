@@ -7,25 +7,14 @@
 #include <string>
 #include <iostream>
 
-
-// ============================================================
-// Clase Base Abstracta: Examen
-// Contiene la lógica común de tiempo y puntaje.
-// Cada hijo define cantPreguntas y el comportamiento especial
-// de su tipo (certificado, etapa o nivel).
-// ============================================================
 class Examen {
 protected:
     int correctos;
     int incorrectos;
     int cantPreguntas;
-    int multiplicadorExp; // NUEVO: Encapsulamiento
+    int multiplicadorExp;
     int recomGemas;
 
-    // ---- Lógica de ejecución compartida entre hijos ----
-    // Extrae preguntas de la pila, pregunta una por una y
-    // registra cada respuesta en el ResultadoDetallado.
-    // Complejidad: O(n) donde n = cantPreguntas
     ResultadoDetallado ejecutarRonda(
         Pila<Pregunta*>& pila,
         const std::string& nombreExamen,
@@ -42,7 +31,6 @@ protected:
         std::cout << "========================================\n\n";
 
         int num = 1;
-        // El examen termina si se acaban las preguntas o si las vidas llegan a 0
         while (!pila.estaVacia() && user->getVidas() > 0) {
             Pregunta* p = pila.pop();
 
@@ -60,7 +48,7 @@ protected:
             }
             else {
                 std::cout << "  -> Incorrecto. Respuesta: " << p->getRespuestaCorrecta() << "\n";
-                user->restarVida(); // Penalización real
+                user->restarVida();
                 std::cout << "  -> Pierdes un corazon. Vidas restantes: " << user->getVidas() << "\n\n";
                 incorrectos++;
             }
@@ -75,6 +63,20 @@ protected:
         return resultado;
     }
 
+    // [NUEVO]: El Examen ahora maneja y reparte la EXP y las Gemas
+    void otorgarRecompensas(Usuario* user, int puntaje, bool aprobado) {
+        int expGanada = puntaje * multiplicadorExp;
+        if (expGanada > 0) {
+            user->sumarExp(expGanada);
+            std::cout << ">>> Has ganado " << expGanada << " de EXP! <<<\n";
+        }
+
+        if (aprobado) {
+            user->sumarGemas(recomGemas);
+            std::cout << ">>> Has ganado " << recomGemas << " gemas por aprobar! <<<\n";
+        }
+    }
+
 public:
     explicit Examen(int cantPreguntas, int multExp, int rGemas)
         : correctos(0), incorrectos(0),
@@ -83,7 +85,6 @@ public:
 
     virtual ~Examen() {}
 
-    // El método hacerExamen ahora debe recibir al Usuario
     virtual ResultadoDetallado hacerExamen(Pila<Pregunta*>& preguntas, Usuario* user) = 0;
     virtual std::string getNombre() const = 0;
 
@@ -94,70 +95,77 @@ public:
 
 
 // ============================================================
-// ExamenCertificado — 10 preguntas
-// Al aprobar (>=70%), emite un mensaje de certificado.
-// Es el examen más exigente de la plataforma.
-// ============================================================
 class ExamenCertificado : public Examen {
 public:
-    // Parametros: 10 preguntas, Multiplicador x25, 100 gemas
     ExamenCertificado() : Examen(10, 25, 100) {}
-
     std::string getNombre() const override { return "Examen Certificado"; }
 
     ResultadoDetallado hacerExamen(Pila<Pregunta*>& preguntas, Usuario* user) override {
         ResultadoDetallado res = ejecutarRonda(preguntas, getNombre(), user);
+
+        // Logica de validacion interna (70%)
         double porcentaje = (double)res.getPuntaje() / cantPreguntas * 100.0;
-        if (porcentaje >= 70.0) {
-            std::cout << "*** CERTIFICADO EMITIDO ***\n";
+        bool aprobado = (porcentaje >= 70.0 && user->getVidas() > 0);
+
+        if (aprobado) {
+            std::cout << "\n*** CERTIFICADO EMITIDO CON EXITO ***\n";
         }
+        else if (user->getVidas() > 0) {
+            std::cout << "\n>>> No lograste el puntaje minimo del 70%. ¡Sigue intentando! <<<\n";
+        }
+
+        otorgarRecompensas(user, res.getPuntaje(), aprobado);
         return res;
     }
 };
 
-
-// ============================================================
-// ExamenEtapa — 7 preguntas
-// Al aprobar (>=60%), desbloquea la siguiente etapa de la plataforma,
-// permitiendo saltar secciones completas.
 // ============================================================
 class ExamenEtapa : public Examen {
-
 public:
-    // Parametros: 7 preguntas, Multiplicador x20, 70 gemas
     ExamenEtapa() : Examen(7, 20, 70) {}
-
     std::string getNombre() const override { return "Examen de Etapa"; }
 
     ResultadoDetallado hacerExamen(Pila<Pregunta*>& preguntas, Usuario* user) override {
         ResultadoDetallado res = ejecutarRonda(preguntas, getNombre(), user);
+
+        // Logica de validacion interna (60%)
         double porcentaje = (double)res.getPuntaje() / cantPreguntas * 100.0;
-        if (porcentaje >= 60.0) {
-            std::cout << "ETAPA SUPERADA. Has saltado secciones completas.\n";
+        bool aprobado = (porcentaje >= 60.0 && user->getVidas() > 0);
+
+        if (aprobado) {
+            std::cout << "\n>>> ETAPA SUPERADA. Has saltado secciones completas. <<<\n";
         }
+        else if (user->getVidas() > 0) {
+            std::cout << "\n>>> No lograste el puntaje minimo del 60%. ¡Sigue intentando! <<<\n";
+        }
+
+        otorgarRecompensas(user, res.getPuntaje(), aprobado);
         return res;
     }
 };
 
-
 // ============================================================
-// ExamenNivel — 5 preguntas
-// Al aprobar (>=60%), avanza al usuario a la siguiente lección.
-// Son los exámenes rápidos del día a día.
-// ============================================================
-
 class ExamenNivel : public Examen {
-
 public:
-    // Parametros: 5 preguntas, Multiplicador x15, 50 gemas
-    ExamenNivel()
-        : Examen(5, 15, 50) {
-    }
-
+    ExamenNivel() : Examen(5, 15, 50) {}
     std::string getNombre() const override { return "Examen de Nivel"; }
 
     ResultadoDetallado hacerExamen(Pila<Pregunta*>& preguntas, Usuario* user) override {
         ResultadoDetallado res = ejecutarRonda(preguntas, getNombre(), user);
+
+        // Logica de validacion interna (Mitad + 1)
+        int mitad = (cantPreguntas / 2) + 1;
+        bool aprobado = (res.getPuntaje() >= mitad && user->getVidas() > 0);
+
+        if (aprobado) {
+            std::cout << "\n>>> PRUEBA SUPERADA <<<\n";
+            user->avanzarNivel(); // El examen hace avanzar al usuario automaticamente
+        }
+        else if (user->getVidas() > 0) {
+            std::cout << "\n>>> No lograste el puntaje minimo. ¡Sigue intentando! <<<\n";
+        }
+
+        otorgarRecompensas(user, res.getPuntaje(), aprobado);
         return res;
     }
 };

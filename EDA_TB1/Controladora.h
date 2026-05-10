@@ -128,7 +128,7 @@ private:
 
     }
 
-    void menuExamen() {
+   void menuExamen() {
         if (usuarioActual->getVidas() <= 0) {
             std::cout << "\nNo tienes vidas, intentelo despues.\n";
             return;
@@ -140,7 +140,7 @@ private:
             return;
         }
         if (usuarioActual->getEtapaActual() >= c->getCantidadEtapas()) {
-            std::cout << "\n¡Felicidades! Ya has completado todo el curso de " << c->getIdioma() << ".\n";
+            std::cout << "\nFelicidades! Ya has completado todo el curso de " << c->getIdioma() << ".\n";
             return;
         }
 
@@ -168,7 +168,6 @@ private:
         default:
             std::cout << "Opcion invalida, seleccionando Examen de Nivel por defecto.\n";
             examen = new ExamenNivel();
-            tipoExamen = 1;
             break;
         }
 
@@ -182,29 +181,6 @@ private:
             });
 
         ResultadoDetallado res = examen->hacerExamen(preguntasExamen, usuarioActual);
-
-        int expGanada = res.getPuntaje() * examen->getMultiplicadorExp();
-        if (expGanada > 0) {
-            usuarioActual->sumarExp(expGanada);
-            std::cout << "Prueba no superada, pero\n";
-            std::cout << "Has ganado " << expGanada << " de EXP!\n";
-        }
-
-        int mitad = (examen->getCantPreguntas() / 2) + 1;
-
-        if (res.getPuntaje() >= mitad && usuarioActual->getVidas() > 0) {
-            std::cout << "\nPrueba superada\n";
-            if (tipoExamen == 1) {
-                usuarioActual->avanzarNivel();
-            }
-            else if (tipoExamen == 2) {
-               // usuarioActual->avanzarEtapa();
-            }
-            usuarioActual->sumarGemas(examen->getRecomGemas());
-        }
-        else if (usuarioActual->getVidas() > 0) {
-            std::cout << "\n>>> No lograste el puntaje minimo. ¡Sigue intentando! <<<\n";
-        }
 
         delete examen;
     }
