@@ -6,5 +6,5 @@ Traduce 'Libro' al ingles | book
 Traduce 'Pajaro' al ingles | bird
 Traduce 'Lentes' al ingles | glasses
 Traduce 'Azul' al ingles | blue
-Traduce 'Verde' al ingles | verde
+Traduce 'Verde' al ingles | green
 Traduce 'Negro' al ingles | black

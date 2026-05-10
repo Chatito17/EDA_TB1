@@ -150,8 +150,6 @@ public:
         if (indiceEtapaActual >= cursoActual->getCantidadEtapas()) return;
 
         indiceNivelActual++;
- 
-        indiceNivelActual++;
 
         // CORRECCIÓN: Faltaba definir etapaActualObj para prevenir el Null Pointer / Crasheo
         Etapa* etapaActualObj = cursoActual->getEtapa(indiceEtapaActual);

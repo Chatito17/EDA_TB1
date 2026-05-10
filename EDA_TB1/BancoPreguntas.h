@@ -43,7 +43,8 @@ public:
     //
     // Complejidad: O(total) filtrar + O(aptos) barajar
     // ================================================================
-    Pila<Pregunta*> seleccionarParaExamen(int n, std::function<bool(Pregunta*)> criterio) const
+    template<typename Criterio>
+    Pila<Pregunta*> seleccionarParaExamen(int n, Criterio criterio) const
     {
         LinkedList<Pregunta*> aptas;
         for (int i = 0; i < preguntas.getLongitud(); i++) {

@@ -63,7 +63,7 @@ public:
     void procesarTodos(Accion accion) {
         NodoCola<T>* actual = frente;
         while (actual != nullptr) {
-            accion = actual->dato;
+            accion(actual->dato);
             actual = actual->siguiente;
         }
     }

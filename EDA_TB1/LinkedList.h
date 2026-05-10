@@ -6,6 +6,8 @@ public:
 	T dato;
 	NodoList<T>* siguiente;
 	NodoList(T valor) : dato(valor), siguiente(nullptr) {}
+
+	NodoList(T valor, NodoList<T>* sig) : dato(valor), siguiente(sig) {}
 };
 
 template <typename T>
@@ -13,8 +15,6 @@ class LinkedList {
 private:
 	NodoList<T>* head;
 	int longitud;
-
-	
 
 public:
 	LinkedList() : head(nullptr), longitud(0) {}
