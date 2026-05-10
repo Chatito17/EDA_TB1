@@ -246,7 +246,7 @@ private:
         Nivel* nivel1 = new Nivel("Leccion 1: Lo basico");
 
         // --- 4. CARGAMOS LAS PREGUNTAS DESDE EL ARCHIVO TXT ---
-        nivel1->getBancoPreguntas()->cargarDesdeArchivo("preguntas_ingles.txt");
+        nivel1->getBancoPreguntas()->cargarDesdeArchivo("Preguntas_Ingles.txt");
 
         sec1->agregarNivel(nivel1);
         etapa1->agregarSeccion(sec1);

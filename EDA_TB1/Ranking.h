@@ -72,8 +72,12 @@ public:
         quickSort(arr, 0, n - 1);
 
         // Reconstruimos la lista ordenada
+        Node<Usuario*>* nodoActual = listaUsuarios.NodeAt(0); // Tomamos la cabeza
         for (int i = 0; i < n; i++) {
-            listaUsuarios.ModifyPos(arr[i], i);
+            if (nodoActual != nullptr) {
+                nodoActual->data = arr[i];
+                nodoActual = nodoActual->next;
+            }
         }
         delete[] arr;
     }

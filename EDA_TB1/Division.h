@@ -14,6 +14,7 @@ private:
 public:
     Division(Divisiones divInicial = Bronce) {
         nombreDivision = divInicial;
+        ranking = new Ranking();
     }
     ~Division() {
         if (ranking != nullptr) delete ranking;

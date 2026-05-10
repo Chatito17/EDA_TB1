@@ -14,7 +14,8 @@ public:
     Producto(std::string _nombre, std::string _detalle, int _costo)
         : nombre(_nombre), detalle(_detalle), costo(_costo) {
     }
-    ~Producto() {}
+    // En Producto.h, cambia la línea del destructor:
+    virtual ~Producto() {} // [CORRECCIÓN]: Indispensable al usar herencia y delete
 
     virtual void activar(Usuario* usuario) {};
 

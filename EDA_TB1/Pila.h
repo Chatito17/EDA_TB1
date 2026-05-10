@@ -18,9 +18,32 @@ private:
         vaciarRecursivo(nodo->siguiente); // Llamada recursiva hasta el final
         delete nodo; // Se elimina de abajo hacia arriba
     }
+    void copiarDesde(const Pila<T>& otra) {
+        if (otra.cima == nullptr) return;
+        NodoPila<T>* actual = otra.cima;
+        Pila<T> temp;
+        // Invertimos temporalmente para mantener el orden
+        while (actual != nullptr) {
+            temp.push(actual->dato);
+            actual = actual->siguiente;
+        }
+        while (!temp.estaVacia()) {
+            this->push(temp.pop());
+        }
+    }
 public:
     Pila() : cima(nullptr) {}
-
+    Pila(const Pila<T>& otra) : cima(nullptr) {
+        copiarDesde(otra);
+    }
+    Pila<T>& operator=(const Pila<T>& otra) {
+        if (this != &otra) {
+            vaciarRecursivo(cima);
+            cima = nullptr;
+            copiarDesde(otra);
+        }
+        return *this;
+    }
     ~Pila() {
         vaciarRecursivo(cima);
         cima = nullptr;
