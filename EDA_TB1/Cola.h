@@ -1,19 +1,17 @@
 #pragma once
-#include <iostream>
-
 template <typename T>
-class Nodo {
+class NodoCola {
 public:
     T dato;
-    Nodo<T>* siguiente;
-    Nodo(T valor) : dato(valor), siguiente(nullptr) {}
+    NodoCola<T>* siguiente;
+    NodoCola(T valor) : dato(valor), siguiente(nullptr) {}
 };
 
 template <typename T>
 class Cola {
 private:
-    Nodo<T>* frente;
-    Nodo<T>* final;
+    NodoCola<T>* frente;
+    NodoCola<T>* final;
     int longitud;
 
 public:
@@ -29,7 +27,7 @@ public:
         }
     }
     void encolar(T valor) {
-        Nodo* nuevo = new Nodo(valor);
+        NodoCola* nuevo = new NodoCola(valor);
         if (final == nullptr) {
             frente = final = nuevo;
             return;
@@ -40,7 +38,7 @@ public:
     }
     T desencolar() {
         if (frente == nullptr) return T();
-        Nodo* temp = frente;
+        NodoCola* temp = frente;
         T valor = temp->dato;
         frente = frente->siguiente;
         if (frente == nullptr)

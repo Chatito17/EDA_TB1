@@ -1,29 +1,29 @@
 #pragma once
 
 template <typename T>
-class Nodo {
+class NodoPila {
 public:
 	T dato;
-	Nodo<T>* siguiente;
-	Nodo(T valor) : dato(valor), siguiente(nullptr) {}
+	NodoPila<T>* siguiente;
+	NodoPila(T valor) : dato(valor), siguiente(nullptr) {}
 };
 
 template <typename T>
 class Pila {
 private:
-	Nodo<T>* cima;
+	NodoPila<T>* cima;
 public:
 	Pila() : cima(nullptr) {}
 
 	void push(T valor) {
-		Nodo<T>* nuevo = new Nodo<T>(valor);
+		NodoPila<T>* nuevo = new NodoPila<T>(valor);
 		nuevo->siguiente = cima;
 		cima = nuevo;
 	}
 
 	T pop() {
 		if (cima == nullptr) return T();
-		Nodo<T>* temp = cima;
+		NodoPila<T>* temp = cima;
 		T valor = temp->dato;
 		cima = cima->siguiente;
 		delete temp;

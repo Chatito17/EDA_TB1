@@ -1,26 +1,26 @@
 #pragma once
 
 template <typename T>
-class Nodo {
+class NodoList {
 public:
 	T dato;
-	Nodo<T>* siguiente;
-	Nodo(T valor) : dato(valor), siguiente(nullptr) {}
+	NodoList<T>* siguiente;
+	NodoList(T valor) : dato(valor), siguiente(nullptr) {}
 };
 
 template <typename T>
 class LinkedList {
 private:
-	Node<T>* head;
-	int length;
+	NodoList<T>* head;
+	int longitud;
 
-	Node<T>* NodeAt(int pos) {
-		if (pos >= length) {
+	NodoList<T>* NodeAt(int pos) {
+		if (pos >= longitud) {
 			std::cout << "No existe posicion, debe ser menor al tamanio de la lista...\n";
 			return nullptr;
 		}
 		int index = 0;
-		Node<T>* aux = head;
+		NodoList<T>* aux = head;
 		while (index < pos) {
 			aux = aux->next;
 			index++;
@@ -29,10 +29,10 @@ private:
 	}
 
 public:
-	LinkedList() : head(nullptr), length(0) {}
+	LinkedList() : head(nullptr), longitud(0) {}
 	~LinkedList() {
-		Node<T>* aux = head;
-		Node<T>* aux2;
+		NodoList<T>* aux = head;
+		NodoList<T>* aux2;
 		while (aux != nullptr) {
 			aux2 = aux->next;
 			delete aux;
@@ -41,11 +41,11 @@ public:
 	}
 
 	void Print() {
-		if (IsEmpty()) {
+		if (estaVacia()) {
 			std::cout << "La lista enlazada esta Vacia...\n";
 			return;
 		}
-		Node<T>* aux = head;
+		NodoList<T>* aux = head;
 		while (aux != nullptr) {
 			std::cout << aux->data << " ";
 			aux = aux->next;
@@ -53,67 +53,63 @@ public:
 		std::cout << std::endl;
 	}
 
-	// La longitud
-	int Length() {
-		return length;
+	int getLongitud() {
+		return longitud;
 	}
 
-	// Es vacío
-	bool IsEmpty() {
-		return length == 0;
+	bool estaVacia() {
+		return longitud == 0;
 	}
 
 	void AddFirst(T data) {
-		Node<T>* node = new Node<T>(data, IsEmpty() ? nullptr : head);
+		NodoList<T>* node = new NodoList<T>(data, estaVacia() ? nullptr : head);
 		head = node;
-		length++;
+		longitud++;
 	}
 
 	void AddPos(T data, int pos) {
-		// Ubicamos la posición anterior
-		if (pos == 0) // Agrego al inicio
+		if (pos == 0) 
 			AddFirst(data);
 		else
 		{
-			Node<T>* nodeBefore = NodeAt(pos - 1);
-			Node<T>* nodeAfter = nodeBefore->next;
-			// El nodo nuevo apunta a la siguiente posición
-			Node<T>* node = new Node<T>(data, nodeAfter);
-			// El nodo anterior apunta al nuevo nodo.
+			NodoList<T>* nodeBefore = NodeAt(pos - 1);
+			NodoList<T>* nodeAfter = nodeBefore->next;
+
+			NodoList<T>* node = new Node<T>(data, nodeAfter);
+			
 			nodeBefore->next = node;
 		}
-		length++;
+		longitud++;
 	}
 
 	void AddLast(T data) {
-		Node<T>* node = new Node<T>(data);
-		if (IsEmpty()) {
+		NodoList<T>* node = new NodoList<T>(data);
+		if (estaVacia()) {
 			head = node;
 		}
 		else {
-			// Buscamos el último nodo y lo agregamos
-			Node<T>* nodeLast = NodeAt(length - 1);
+			NodoList<T>* nodeLast = NodeAt(longitud - 1);
 			nodeLast->next = node;
 		}
-		length++;
+		longitud++;
 	}
 
 	void ModifyFirst(T data) {
-		Node<T>* currentNode = NodeAt(0);
+		NodoList<T>* currentNode = NodeAt(0);
 		if (currentNode != nullptr) {
 			currentNode->data = data;
 		}
 	}
 
 	void ModifyPos(T data, int pos) {
-		Node<T>* currentNode = NodeAt(pos);
+		NodoList<T>* currentNode = NodeAt(pos);
 		if (currentNode != nullptr) {
 			currentNode->data = data;
 		}
 	}
 
 	void ModifyLast(T data) {
-		Node<T>* currentNode = NodeAt(length - 1);
+		NodoList<T>* currentNode = NodeAt(length - 1);
 		if (currentNode != nullptr) {
 			currentNode->data = data;
 		}
@@ -124,7 +120,7 @@ public:
 			std::cout << "No se puede eliminar un nodo en una lista enlazada vacía\n";
 			return;
 		}
-		Node<T>* aux = head;
+		NodoList<T>* aux = head;
 		head = head->next;
 		delete aux;
 		length--;
@@ -135,14 +131,13 @@ public:
 			std::cout << "No se puede eliminar un nodo en una lista enlazada vacía\n";
 			return;
 		}
-		if (pos == 0) // Remuevo el inicio
+		if (pos == 0)
 			RemoveFirst();
 		else {
-			Node<T>* nodeBefore = NodeAt(pos - 1);
-			Node<T>* nodeErase = NodeAt(pos);
+			NodoList<T>* nodeBefore = NodeAt(pos - 1);
+			NodoList<T>* nodeErase = NodeAt(pos);
 			if (nodeBefore != nullptr && nodeErase != nullptr) {
 				nodeBefore->next = nodeErase->next;
-				// Podemos eliminar con tranquilidad el nodo elegido
 				delete nodeErase;
 				length--;
 			}
@@ -155,18 +150,15 @@ public:
 			return;
 		}
 		if (length == 1) {
-			Node<T>* aux = head;
+			NodoList<T>* aux = head;
 			head = nullptr;
 			delete aux;
 			length--;
 		}
 		else {
-			// Busca el penúltimo nodo, lo guardamos
-			Node<T>* nodePreviousLast = NodeAt(length - 2);
+			NodoList<T>* nodePreviousLast = NodeAt(length - 2);
 			if (nodePreviousLast != nullptr) {
-				// Penúltimo nodo apunte a nulo y hacemos que el último nodo
-				// sea eliminado.
-				Node<T>* nodeLast = nodePreviousLast->next;
+				NodoList<T>* nodeLast = nodePreviousLast->next;
 				nodePreviousLast->next = nullptr;
 				delete nodeLast;
 				length--;
@@ -175,7 +167,7 @@ public:
 	}
 
 	T GetPos(int pos) {
-		Node<T>* node = NodeAt(pos);
+		NodoList<T>* node = NodeAt(pos);
 		return node != nullptr ? node->data : T();
 	}
 };
