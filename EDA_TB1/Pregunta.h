@@ -1,10 +1,7 @@
-#ifndef PREGUNTA_H
-#define PREGUNTA_H
 #pragma once
 
 #include <string>
 #include <algorithm>
-#include <cctype>
 #include <iostream>
 
 // ============================================================
@@ -123,4 +120,3 @@ public:
     int getCantidad() const { return cantidad; }
 };
 
-#endif // PREGUNTA_H

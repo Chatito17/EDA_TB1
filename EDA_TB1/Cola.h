@@ -59,10 +59,11 @@ public:
 
     // Agregado lambda
     // Método 3 (Criterio B y D): Procesar con Lambda
-    void procesarTodos(std::function<void(T)> accion) {
+    template <typename Accion>
+    void procesarTodos(Accion accion) {
         NodoCola<T>* actual = frente;
         while (actual != nullptr) {
-            accion(actual->dato);
+            accion = actual->dato;
             actual = actual->siguiente;
         }
     }

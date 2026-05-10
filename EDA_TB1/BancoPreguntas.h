@@ -7,8 +7,6 @@
 #include <fstream>
 #include <sstream>
 #include <functional>
-#include <cstdlib>
-#include <ctime>
 #include <iostream>
 
 class BancoPreguntas {
@@ -29,8 +27,6 @@ public:
             }
         }
     }
-
-    // Agrega una pregunta; el banco toma posesión del puntero - amortizado O(1)
     void agregar(Pregunta* p) {
         preguntas.AddLast(p);
     }

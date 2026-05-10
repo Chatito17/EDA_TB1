@@ -145,6 +145,7 @@ public:
     int getNivelActual() { return indiceNivelActual; }
 
     void avanzarNivel() {
+
         if (!cursoActual) return;
         if (indiceEtapaActual >= cursoActual->getCantidadEtapas()) return;
 
