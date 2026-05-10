@@ -163,17 +163,17 @@ private:
         // Instanciación Polimórfica (Ya no hardcodeamos las variables aquí)
         switch (tipoExamen) {
         case 1:
-            examen = new ExamenNivel("Leccion");
+            examen = new ExamenNivel();
             break;
         case 2:
-            examen = new ExamenEtapa(usuarioActual->getEtapaActual() + 1);
+            examen = new ExamenEtapa();
             break;
         case 3:
             examen = new ExamenCertificado();
             break;
         default:
             std::cout << "Opcion invalida, seleccionando Examen de Nivel por defecto.\n";
-            examen = new ExamenNivel("Leccion");
+            examen = new ExamenNivel();
             tipoExamen = 1;
             break;
         }

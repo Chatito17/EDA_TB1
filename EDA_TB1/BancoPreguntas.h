@@ -1,7 +1,8 @@
 #pragma once
-
 #include "Pregunta.h"
 #include "Pila.h"
+#include "LinkedList.h"
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -12,39 +13,30 @@
 
 class BancoPreguntas {
 private:
-    Pregunta** preguntas;   // arreglo dinámico de punteros
-    int cantidad;    // preguntas cargadas
-    int capacidad;   // tamaño actual del arreglo
-
-    // Duplica capacidad cuando el arreglo se llena - O(n)
-    void expandir() {
-        int nuevaCap = capacidad * 2;
-        Pregunta** nuevo = new Pregunta * [nuevaCap];
-        for (int i = 0; i < cantidad; i++) nuevo[i] = preguntas[i];
-        delete[] preguntas;
-        preguntas = nuevo;
-        capacidad = nuevaCap;
-    }
+    LinkedList<Pregunta*> preguntas;
 
 public:
-    BancoPreguntas() : cantidad(0), capacidad(16) {
-        preguntas = new Pregunta * [capacidad];
-        std::srand((unsigned)std::time(nullptr));
+    BancoPreguntas() {
+        std::srand(std::time(0));
     }
 
     // Destructor: libera cada pregunta y el arreglo - O(n)
     ~BancoPreguntas() {
-        for (int i = 0; i < cantidad; i++) delete preguntas[i];
-        delete[] preguntas;
+        for (int i = 0; i < preguntas.getLongitud(); i++) {
+            Pregunta* p = preguntas.GetPos(i);
+            if (p != nullptr) {
+                delete p;
+            }
+        }
     }
 
     // Agrega una pregunta; el banco toma posesión del puntero - amortizado O(1)
     void agregar(Pregunta* p) {
-        if (cantidad == capacidad) expandir();
-        preguntas[cantidad++] = p;
+        preguntas.AddLast(p);
     }
-
-    int getCantidad() const { return cantidad; }
+    int getCantidad() {
+        return preguntas.getLongitud();
+    }
 
     // ================================================================
     // seleccionarParaExamen — integra Lambda 2
@@ -55,20 +47,17 @@ public:
     //
     // Complejidad: O(total) filtrar + O(aptos) barajar
     // ================================================================
-    Pila<Pregunta*> seleccionarParaExamen(
-        int n,
-        std::function<bool(Pregunta*)> criterio) const
+    Pila<Pregunta*> seleccionarParaExamen(int n, std::function<bool(Pregunta*)> criterio) const
     {
-        // --- Lambda 2 en acción: filtra preguntas aptas ---
-        // Arreglo dinámico temporal (sin vector)
-        Pregunta** aptas = new Pregunta * [cantidad];
-        int cantAptas = 0;
-
-        for (int i = 0; i < cantidad; i++) {
-            if (criterio(preguntas[i]))
-                aptas[cantAptas++] = preguntas[i];
+        LinkedList<Pregunta*> aptas;
+        for (int i = 0; i < preguntas.getLongitud(); i++) {
+            Pregunta* p = preguntas.GetPos(i);
+            if (criterio(p)) {
+                aptas.AddLast(p); // Apuntamos las que cumplen
+            }
         }
 
+        int cantAptas = aptas.getLongitud();
         if (cantAptas < n) {
             std::cout << "[BancoPreguntas] Solo hay " << cantAptas
                 << " preguntas aptas; se pedian " << n
@@ -76,26 +65,27 @@ public:
             n = cantAptas;
         }
 
-        // Barajar Fisher-Yates sobre aptas[]
-        for (int i = cantAptas - 1; i > 0; i--) {
-            int j = std::rand() % (i + 1);
-            Pregunta* tmp = aptas[i]; aptas[i] = aptas[j]; aptas[j] = tmp;
+        Pila<Pregunta*> pila;
+
+        // 2. Extraer aleatoriamente directo de la LinkedList temporal a la Pila
+        while (n > 0 && !aptas.estaVacia()) {
+            int randomIndex = std::rand() % aptas.getLongitud();
+            Pregunta* p = aptas.GetPos(randomIndex);
+
+            pila.push(p);                  // La metemos al examen
+            aptas.RemovePos(randomIndex);  // La quitamos para no repetirla en la selección
+            n--;
         }
 
-        // Apilar las primeras n aptas
-        Pila<Pregunta*> pila;
-        for (int i = 0; i < n; i++) pila.push(aptas[i]);
-
-        delete[] aptas;
         return pila;
     }
 
     // Debug: muestra todo el banco - O(n)
-    void mostrarTodo() const {
-        std::cout << "=== Banco (" << cantidad << " preguntas) ===" << std::endl;
-        for (int i = 0; i < cantidad; i++) {
+    void mostrarTodo() {
+        std::cout << "=== Banco (" << preguntas.getLongitud() << " preguntas) ===" << std::endl;
+        for (int i = 0; i < preguntas.getLongitud(); i++) {
             std::cout << (i + 1) << ". ";
-            preguntas[i]->mostrar();
+            preguntas.GetPos(i)->mostrar();
         }
     }
     void cargarDesdeArchivo(const std::string& rutaArchivo) {

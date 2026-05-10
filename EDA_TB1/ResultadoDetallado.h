@@ -17,9 +17,8 @@ class ResultadoDetallado {
 private:
     // ----- Datos globales del intento -----
     std::string nombreExamen;
-    int         puntaje;
-    int         totalPreguntas;
-    std::string fecha;
+    int puntaje;
+    int totalPreguntas;
 
     // ----- Arreglos paralelos: un slot por pregunta respondida -----
     // Cada índice i representa la pregunta i-ésima del examen.
@@ -59,7 +58,6 @@ private:
         capDetalles = nuevaCap;
     }
 
-    // Libera los 4 arreglos (usado en destructor y op=)
     void liberar() {
         delete[] enunciados;
         delete[] respuestasUsuario;
@@ -77,7 +75,6 @@ private:
     }
 
 public:
-    // Constructor por defecto (necesario para arreglos de ResultadoDetallado)
     ResultadoDetallado()
         : puntaje(0), totalPreguntas(0),
         enunciados(nullptr), respuestasUsuario(nullptr),
@@ -85,10 +82,8 @@ public:
         cantDetalles(0), capDetalles(0) {
     }
 
-    ResultadoDetallado(const std::string& nombre, int total,
-        const std::string& fecha)
-        : nombreExamen(nombre), puntaje(0), totalPreguntas(total),
-        fecha(fecha), cantDetalles(0)
+    ResultadoDetallado(const std::string& nombre, int total)
+        : nombreExamen(nombre), puntaje(0), totalPreguntas(total), cantDetalles(0)
     {
         alocar(total > 0 ? total : 8); // preasigna justo lo necesario
     }
@@ -96,7 +91,7 @@ public:
     // Constructor de copia — regla de tres - O(n)
     ResultadoDetallado(const ResultadoDetallado& otro)
         : nombreExamen(otro.nombreExamen), puntaje(otro.puntaje),
-        totalPreguntas(otro.totalPreguntas), fecha(otro.fecha),
+        totalPreguntas(otro.totalPreguntas),
         cantDetalles(otro.cantDetalles)
     {
         alocar(otro.capDetalles);
@@ -115,7 +110,6 @@ public:
             nombreExamen = otro.nombreExamen;
             puntaje = otro.puntaje;
             totalPreguntas = otro.totalPreguntas;
-            fecha = otro.fecha;
             cantDetalles = otro.cantDetalles;
             alocar(otro.capDetalles);
             for (int i = 0; i < cantDetalles; i++) {
@@ -146,14 +140,13 @@ public:
     }
 
     // ---- Getters ----
-    int         getPuntaje()         const { return puntaje; }
-    int         getTotalPreguntas()  const { return totalPreguntas; }
+    int getPuntaje()         const { return puntaje; }
+    int getTotalPreguntas()  const { return totalPreguntas; }
     std::string getNombreExamen()    const { return nombreExamen; }
-    std::string getFecha()           const { return fecha; }
 
     // Resumen de una línea - O(1)
     void mostrar() const {
-        std::cout << "[" << fecha << "] " << nombreExamen
+        std::cout << nombreExamen
             << "  ->  " << puntaje << "/" << totalPreguntas
             << std::endl;
     }

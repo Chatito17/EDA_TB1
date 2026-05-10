@@ -18,7 +18,6 @@ class Examen {
 protected:
     int correctos;
     int incorrectos;
-    int tiempoSegundos;  // tiempo total empleado (simulado)
     int cantPreguntas;
     int multiplicadorExp; // NUEVO: Encapsulamiento
     int recomGemas;
@@ -35,11 +34,7 @@ protected:
         correctos = 0;
         incorrectos = 0;
 
-       
-      
-        std::string fecha = "08/05/2026";
-        
-        ResultadoDetallado resultado(nombreExamen, cantPreguntas, fecha);
+        ResultadoDetallado resultado(nombreExamen, cantPreguntas);
 
         std::cout << "\n========================================\n";
         std::cout << "  " << nombreExamen << "\n";
@@ -82,7 +77,7 @@ protected:
 
 public:
     explicit Examen(int cantPreguntas, int multExp, int rGemas)
-        : correctos(0), incorrectos(0), tiempoSegundos(0),
+        : correctos(0), incorrectos(0),
         cantPreguntas(cantPreguntas), multiplicadorExp(multExp), recomGemas(rGemas) {
     }
 
@@ -127,11 +122,10 @@ public:
 // permitiendo saltar secciones completas.
 // ============================================================
 class ExamenEtapa : public Examen {
-private:
-    int etapaActual;
+
 public:
     // Parametros: 7 preguntas, Multiplicador x20, 70 gemas
-    explicit ExamenEtapa(int etapa = 1) : Examen(7, 20, 70), etapaActual(etapa) {}
+    ExamenEtapa() : Examen(7, 20, 70) {}
 
     std::string getNombre() const override { return "Examen de Etapa"; }
 
@@ -151,13 +145,13 @@ public:
 // Al aprobar (>=60%), avanza al usuario a la siguiente lección.
 // Son los exámenes rápidos del día a día.
 // ============================================================
+
 class ExamenNivel : public Examen {
-private:
-    std::string leccionActual;
+
 public:
     // Parametros: 5 preguntas, Multiplicador x15, 50 gemas
-    explicit ExamenNivel(const std::string& leccion = "Leccion")
-        : Examen(5, 15, 50), leccionActual(leccion) {
+    ExamenNivel()
+        : Examen(5, 15, 50) {
     }
 
     std::string getNombre() const override { return "Examen de Nivel"; }
