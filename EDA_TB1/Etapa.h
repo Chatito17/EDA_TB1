@@ -12,7 +12,7 @@ public:
     Etapa(std::string nombre) : nombreEtapa(nombre) {}
 
     ~Etapa() {
-        for (int i = 0; i < secciones.Length(); i++) {
+        for (int i = 0; i < secciones.getLongitud(); i++) {
             delete secciones.GetPos(i);
         }
     }
@@ -27,5 +27,5 @@ public:
         return secciones.GetPos(index);
     }
 
-    int getCantidadSecciones() { return secciones.Length(); }
+    int getCantidadSecciones() { return secciones.getLongitud(); }
 };

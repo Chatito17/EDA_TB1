@@ -14,6 +14,19 @@ private:
 	NodoList<T>* head;
 	int longitud;
 
+	
+
+public:
+	LinkedList() : head(nullptr), longitud(0) {}
+	~LinkedList() {
+		NodoList<T>* aux = head;
+		NodoList<T>* aux2;
+		while (aux != nullptr) {
+			aux2 = aux->siguiente;
+			delete aux;
+			aux = aux2;
+		}
+	}
 	NodoList<T>* NodeAt(int pos) {
 		if (pos >= longitud) {
 			std::cout << "No existe posicion, debe ser menor al tamanio de la lista...\n";
@@ -22,22 +35,10 @@ private:
 		int index = 0;
 		NodoList<T>* aux = head;
 		while (index < pos) {
-			aux = aux->next;
+			aux = aux->siguiente;
 			index++;
 		}
 		return aux;
-	}
-
-public:
-	LinkedList() : head(nullptr), longitud(0) {}
-	~LinkedList() {
-		NodoList<T>* aux = head;
-		NodoList<T>* aux2;
-		while (aux != nullptr) {
-			aux2 = aux->next;
-			delete aux;
-			aux = aux2;
-		}
 	}
 
 	void Print() {
@@ -47,8 +48,8 @@ public:
 		}
 		NodoList<T>* aux = head;
 		while (aux != nullptr) {
-			std::cout << aux->data << " ";
-			aux = aux->next;
+			std::cout << aux->dato << " ";
+			aux = aux->siguiente;
 		}
 		std::cout << std::endl;
 	}
@@ -73,11 +74,11 @@ public:
 		else
 		{
 			NodoList<T>* nodeBefore = NodeAt(pos - 1);
-			NodoList<T>* nodeAfter = nodeBefore->next;
+			NodoList<T>* nodeAfter = nodeBefore->siguiente;
 
-			NodoList<T>* node = new Node<T>(data, nodeAfter);
+			NodoList<T>* node = new NodoList<T>(data, nodeAfter);
 			
-			nodeBefore->next = node;
+			nodeBefore->siguiente = node;
 		}
 		longitud++;
 	}
@@ -89,7 +90,7 @@ public:
 		}
 		else {
 			NodoList<T>* nodeLast = NodeAt(longitud - 1);
-			nodeLast->next = node;
+			nodeLast->siguiente = node;
 		}
 		longitud++;
 	}
@@ -97,37 +98,37 @@ public:
 	void ModifyFirst(T data) {
 		NodoList<T>* currentNode = NodeAt(0);
 		if (currentNode != nullptr) {
-			currentNode->data = data;
+			currentNode->dato = data;
 		}
 	}
 
 	void ModifyPos(T data, int pos) {
 		NodoList<T>* currentNode = NodeAt(pos);
 		if (currentNode != nullptr) {
-			currentNode->data = data;
+			currentNode->dato = data;
 		}
 	}
 
 	void ModifyLast(T data) {
-		NodoList<T>* currentNode = NodeAt(length - 1);
+		NodoList<T>* currentNode = NodeAt(longitud - 1);
 		if (currentNode != nullptr) {
-			currentNode->data = data;
+			currentNode->dato = data;
 		}
 	}
 
 	void RemoveFirst() {
-		if (IsEmpty()) {
+		if (estaVacia()) {
 			std::cout << "No se puede eliminar un nodo en una lista enlazada vacía\n";
 			return;
 		}
 		NodoList<T>* aux = head;
-		head = head->next;
+		head = head->siguiente;
 		delete aux;
-		length--;
+		longitud--;
 	}
 
 	void RemovePos(int pos) {
-		if (IsEmpty()) {
+		if (estaVacia()) {
 			std::cout << "No se puede eliminar un nodo en una lista enlazada vacía\n";
 			return;
 		}
@@ -137,37 +138,37 @@ public:
 			NodoList<T>* nodeBefore = NodeAt(pos - 1);
 			NodoList<T>* nodeErase = NodeAt(pos);
 			if (nodeBefore != nullptr && nodeErase != nullptr) {
-				nodeBefore->next = nodeErase->next;
+				nodeBefore->siguiente = nodeErase->siguiente;
 				delete nodeErase;
-				length--;
+				longitud--;
 			}
 		}
 	}
 
 	void RemoveLast() {
-		if (IsEmpty()) {
+		if (estaVacia()) {
 			std::cout << "No se puede eliminar un nodo en una lista enlazada vacía\n";
 			return;
 		}
-		if (length == 1) {
+		if (longitud == 1) {
 			NodoList<T>* aux = head;
 			head = nullptr;
 			delete aux;
-			length--;
+			longitud--;
 		}
 		else {
-			NodoList<T>* nodePreviousLast = NodeAt(length - 2);
+			NodoList<T>* nodePreviousLast = NodeAt(longitud - 2);
 			if (nodePreviousLast != nullptr) {
-				NodoList<T>* nodeLast = nodePreviousLast->next;
-				nodePreviousLast->next = nullptr;
+				NodoList<T>* nodeLast = nodePreviousLast->siguiente;
+				nodePreviousLast->siguiente = nullptr;
 				delete nodeLast;
-				length--;
+				longitud--;
 			}
 		}
 	}
 
 	T GetPos(int pos) {
 		NodoList<T>* node = NodeAt(pos);
-		return node != nullptr ? node->data : T();
+		return node != nullptr ? node->dato: T();
 	}
 };

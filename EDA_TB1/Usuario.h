@@ -6,7 +6,8 @@
 #include "Producto.h"
 #include "Curso.h"
 #include "Cola.h"
-
+#include "Etapa.h"
+#include "Seccion.h"
 
 class Usuario
 {
@@ -145,7 +146,10 @@ public:
 
     void avanzarNivel() {
         if (!cursoActual) return;
+        if (indiceEtapaActual >= cursoActual->getCantidadEtapas()) return;
 
+        indiceNivelActual++;
+ 
         indiceNivelActual++;
 
         // CORRECCIÓN: Faltaba definir etapaActualObj para prevenir el Null Pointer / Crasheo

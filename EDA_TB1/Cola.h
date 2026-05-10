@@ -27,7 +27,7 @@ public:
         }
     }
     void encolar(T valor) {
-        NodoCola* nuevo = new NodoCola(valor);
+        NodoCola<T>* nuevo = new NodoCola<T>(valor);
         if (final == nullptr) {
             frente = final = nuevo;
             return;
@@ -38,7 +38,7 @@ public:
     }
     T desencolar() {
         if (frente == nullptr) return T();
-        NodoCola* temp = frente;
+        NodoCola<T>* temp = frente;
         T valor = temp->dato;
         frente = frente->siguiente;
         if (frente == nullptr)
@@ -48,8 +48,8 @@ public:
         return valor;
     }
 
-    int frente() {
-        return frente ? frente->dato : -1;
+    T top() {
+        return frente ? frente->dato : T();
     }
 
     bool estaVacia() {

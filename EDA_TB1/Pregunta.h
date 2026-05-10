@@ -50,9 +50,9 @@ public:
     bool comprobar(std::string entrada) override {
         // Lambda 1: trim de extremos + lowercase
         auto normalizar = [](std::string s) -> std::string {
-            size_t ini = s.find_first_not_of(" \t");
+            size_t ini = s.find_first_not_of(" \t\r\n");
             if (ini == std::string::npos) return "";
-            size_t fin = s.find_last_not_of(" \t");
+            size_t fin = s.find_last_not_of(" \t\r\n");
             s = s.substr(ini, fin - ini + 1);
             std::transform(s.begin(), s.end(), s.begin(),
                 [](unsigned char c) { return std::tolower(c); });

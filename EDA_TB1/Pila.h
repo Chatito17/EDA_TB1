@@ -34,7 +34,7 @@ public:
 		return cima ? cima->dato : T();
 	}
 
-	bool isEmpty() {
+	bool estaVacia() {
 		return cima == nullptr;
 	}
 };

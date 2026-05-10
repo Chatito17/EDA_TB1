@@ -21,14 +21,12 @@ public:
     }
 
     ~Tienda() {
-        for (int i = 0; i < catalogo.Length(); i++) {
+        for (int i = 0; i < catalogo.getLongitud(); i++) {
             Producto* p = catalogo.GetPos(i);
             if (p != nullptr)
                 delete p;
         }
     }
-    // --- Agrega esto en Tienda.h para cumplir con el uso de Heap Sort ---
-
     void heapify(Producto** arr, int n, int i) {
         int masGrande = i;
         int izq = 2 * i + 1;
@@ -52,7 +50,7 @@ public:
     }
 
     void heapSortCatalogo() {
-        int n = catalogo.Length();
+        int n = catalogo.getLongitud();
         if (n <= 1) return;
 
         // 1. Extraemos a un arreglo nativo
@@ -86,7 +84,7 @@ public:
     void mostrarCatalogo() {
         heapSortCatalogo();
         std::cout << "\n=== TIENDA ===\n";
-        for (int i = 0; i < catalogo.Length(); i++) {
+        for (int i = 0; i < catalogo.getLongitud(); i++) {
             std::cout << i + 1 << ". " << catalogo.GetPos(i)->getNombre()
                 << " - " << catalogo.GetPos(i)->getDetalle()
                 << " (Costo: " << catalogo.GetPos(i)->getCosto() << " gemas)\n";
@@ -96,7 +94,7 @@ public:
     }
 
     Producto* getProducto(int indice) {
-        if (indice >= 0 && indice < catalogo.Length()) {
+        if (indice >= 0 && indice < catalogo.getLongitud()) {
             return catalogo.GetPos(indice);
         }
         return nullptr;

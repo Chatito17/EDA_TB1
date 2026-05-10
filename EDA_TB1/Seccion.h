@@ -12,7 +12,7 @@ public:
     Seccion(std::string nombre) : nombreSeccion(nombre) {}
 
     ~Seccion() {
-        for (int i = 0; i < niveles.Length(); i++) {
+        for (int i = 0; i < niveles.getLongitud(); i++) {
             delete niveles.GetPos(i);
         }
     }
@@ -27,5 +27,5 @@ public:
         return niveles.GetPos(index);
     }
 
-    int getCantidadNiveles() { return niveles.Length(); }
+    int getCantidadNiveles() { return niveles.getLongitud(); }
 };

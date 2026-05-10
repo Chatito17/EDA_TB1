@@ -43,10 +43,10 @@ public:
         delete usuarioActual;
         delete tienda;
         delete ligaActual;
-        for (int i = 0; i < competidores.Length(); i++) {
+        for (int i = 0; i < competidores.getLongitud(); i++) {
             delete competidores.GetPos(i);
         }
-        for (int i = 0; i < catalogoCursos.Length(); i++) {
+        for (int i = 0; i < catalogoCursos.getLongitud(); i++) {
             delete catalogoCursos.GetPos(i);
         }
     }
@@ -218,12 +218,12 @@ private:
     }
     void menuCursos() {
         std::cout << "\n=== CATALOGO DE CURSOS ===\n";
-        if (catalogoCursos.IsEmpty()) {
+        if (catalogoCursos.estaVacia()) {
             std::cout << "No hay cursos disponibles por el momento.\n";
             return;
         }
 
-        for (int i = 0; i < catalogoCursos.Length(); i++) {
+        for (int i = 0; i < catalogoCursos.getLongitud(); i++) {
             std::cout << i + 1 << ". Curso de " << catalogoCursos.GetPos(i)->getIdioma() << "\n";
         }
         std::cout << "0. Volver\n";
@@ -234,7 +234,7 @@ private:
         std::cin >> opcion;
         std::cin.ignore();
 
-        if (opcion > 0 && opcion <= catalogoCursos.Length()) {
+        if (opcion > 0 && opcion <= catalogoCursos.getLongitud()) {
             Curso* cursoElegido = catalogoCursos.GetPos(opcion - 1);
             usuarioActual->inscribirseCurso(cursoElegido);
         }

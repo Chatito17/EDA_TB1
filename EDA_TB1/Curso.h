@@ -12,7 +12,7 @@ public:
     Curso(std::string _idioma) : idioma(_idioma) {}
 
     ~Curso() {
-        for (int i = 0; i < etapas.Length(); i++) {
+        for (int i = 0; i < etapas.getLongitud(); i++) {
             delete etapas.GetPos(i);
         }
     }
@@ -27,5 +27,5 @@ public:
         return etapas.GetPos(index);
     }
 
-    int getCantidadEtapas() { return etapas.Length(); }
+    int getCantidadEtapas() { return etapas.  getLongitud(); }
 };
